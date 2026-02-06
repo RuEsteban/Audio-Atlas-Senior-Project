@@ -1,6 +1,30 @@
 {
   "private": true,
   "dependencies": {
-    "@vercel/edge": "^0.1.2"
+    "@vercel/edge": "^0.1.2",
+    "globe.gl": "^2.45.0",
+    "three": "^0.182.0"
+  },
+  "name": "audio-atlas-senior-project",
+  "version": "1.0.0",
+  "description": "Repo for Audio Atlas Senior Project Spring 2026",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RuEsteban/Audio-Atlas-Senior-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RuEsteban/Audio-Atlas-Senior-Project/issues"
+  },
+  "homepage": "https://github.com/RuEsteban/Audio-Atlas-Senior-Project#readme",
+  "devDependencies": {
+    "vite": "^7.3.1"
   }
 }
