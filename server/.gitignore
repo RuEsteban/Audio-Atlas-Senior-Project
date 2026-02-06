@@ -1,1 +1,11 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+node_modules/
+*.local
 .env
+
+.DS_Store
+
