@@ -1,4 +1,5 @@
 import Globe from 'globe.gl'
+import './styles.css'
 
 //import * as THREE from 'three'
 
