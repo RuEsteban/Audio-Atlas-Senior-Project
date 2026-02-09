@@ -14,3 +14,14 @@ const globe = Globe()(globeContainer)
 globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.6;
 globe.camera().position.z = 300;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("togglePlayer");
+    const player = document.getElementById("musicPlayer");
+
+    console.log(button, player); // debug check
+
+    button.addEventListener("click", () => {
+        player.classList.toggle("show");
+    });
+});
