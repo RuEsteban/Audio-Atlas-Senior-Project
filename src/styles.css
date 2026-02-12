@@ -2,11 +2,23 @@
     display: none;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
 body {
-    background-color: black;
+    background-image: url("starbackground.jpg");
+    background-color: rgba(0,0,0,0.6);
+    background-blend-mode: overlay;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     font-family: 'Oleo Script Swash Caps';
     overflow: hidden;
     margin: 0;
+    z-index: 0;
 }
 
 h1 {
@@ -33,13 +45,14 @@ p {
 }
 
 #globe {
+    background: transparent;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100vw;
     height: 100vh;
-    z-index: 0;
+    z-index: 1;
 }
 
 .player {

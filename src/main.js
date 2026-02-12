@@ -9,7 +9,7 @@ const globeContainer = document.getElementById('globe');
 const globe = Globe()(globeContainer)
   .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
   .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-  .backgroundColor('#000');
+  .backgroundColor('rgba(0,0,0,0)')
 
 globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.6;
