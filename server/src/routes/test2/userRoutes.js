@@ -6,15 +6,22 @@
  */
 
 const routes = async (fastify, options) => {
-    fastify.get('/read', async (request, reply) => {
+    fastify.put('/update-info-test', async (request, reply) => {
         const { supabase } = fastify
-      
-        const { data, error } = await supabase.from('music_charts').select()
-      
-        return { data, error }
-      })
-  }
 
+        const { data, error } = await fastify.supabase
+            .from('music_charts')       // replace with your table name
+            .update({ source: 'hunter', country: 'hunter' })
+            .eq('id', 1)                // only row with id = 1
+            .select()     
+
+        if (error) {
+            return reply.status(500).send({ error: error.message })
+            }
+        
+            return reply.send({ success: true, data })
+    })
+  }
 
   //ESM
   export default routes;
