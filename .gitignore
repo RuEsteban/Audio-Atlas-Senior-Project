@@ -1,3 +1,13 @@
+logs
+*.log
+npm-debug.log*
+
+node_modules/
+*.local
+.env
+
+.DS_Store
+
 .vs/Audio-Atlas-Senior-Project.slnx/FileContentIndex/ad524e56-e237-4904-994b-e1734966430e.vsidx
 .vs/Audio-Atlas-Senior-Project.slnx/FileContentIndex/c40070f0-7651-4e99-a4d5-fffe60903a3b.vsidx
 .vs/Audio-Atlas-Senior-Project.slnx/v18/.wsuo
