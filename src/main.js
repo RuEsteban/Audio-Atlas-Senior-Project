@@ -18,10 +18,12 @@ globe.camera().position.z = 300;
 document.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("togglePlayer");
     const player = document.getElementById("musicPlayer");
+    const optionContainer = document.getElementById("options");
 
     console.log(button, player); // debug check
 
     button.addEventListener("click", () => {
         player.classList.toggle("show");
+        optionContainer.classList.toggle("hidden");
     });
 });
