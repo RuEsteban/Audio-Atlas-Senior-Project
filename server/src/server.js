@@ -6,6 +6,7 @@ import testRoute from './routes/test/testRoute.js'
 import testRoute2 from './routes/test2/userRoutes.js'
 
 import healthRoutes from './routes/health/healthRoutes.js'
+import supabaseHealth from './routes/health/supabaseHealth.js'
 
 const fastify = Fastify({
   logger: true
@@ -18,6 +19,7 @@ fastify.register(supabaseConnector)
 fastify.register(testRoute)
 fastify.register(testRoute2)
 fastify.register(healthRoutes)
+fastify.register(supabaseHealth)
 
 //Run the server
 const start = async () => {
