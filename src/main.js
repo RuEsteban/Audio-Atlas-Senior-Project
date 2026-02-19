@@ -10,7 +10,7 @@ const globeContainer = document.getElementById('globe');
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
 const globe = Globe()(globeContainer)
   //.globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-  .globeImageUrl('/src/8k_earth_daymap.jpg')
+  .globeImageUrl('/public/8k_earth_daymap.jpg')
   .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
   .backgroundColor('#000')
   .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
