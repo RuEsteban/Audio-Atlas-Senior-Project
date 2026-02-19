@@ -9,7 +9,7 @@ import fastifySupabase from 'fastify-supabase';
  */
 async function supabaseConnector (fastify, options) {
     fastify.register(fastifySupabase, {
-        supabaseKey: process.env.SUPABASE_API_KEY,
+        supabaseKey: process.env.SUPABASE_SECRET_KEY,
         supabaseUrl: process.env.SUPABASE_PROJECT_URL
       })
 }
