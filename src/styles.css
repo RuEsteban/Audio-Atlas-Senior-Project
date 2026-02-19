@@ -4,7 +4,6 @@ html, body {
 }
 
 body {
-    background-image: url("starbackground.jpg");
     background-color: rgba(0,0,0,0.6);
     background-blend-mode: overlay;
     background-repeat: no-repeat;
