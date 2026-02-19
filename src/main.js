@@ -10,7 +10,7 @@ const globeContainer = document.getElementById('globe');
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
 const globe = Globe()(globeContainer)
   //.globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-  .globeImageUrl('/public/8k_earth_daymap.jpg')
+  .globeImageUrl('/img/8k_earth_daymap.jpg')
   .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
   .backgroundColor('#000')
   .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
@@ -26,7 +26,7 @@ globe.camera().position.z = 300;
 let hover = null;
 let select = null;
 
-fetch('/src/custom.geo.json')
+fetch('/custom.geo.json')
   .then(res => res.json())
   .then(data => {
     // centering upon zoom according to country data
