@@ -142,13 +142,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const titleElem = songItem.querySelector(".song-info .title");
                 const artistElem = songItem.querySelector(".song-info .artist");
+                const albumnameElem = songItem.querySelector(".song-info .album-name");
+                const yearElem = songItem.querySelector(".song-info .year");
 
                 selectedSong = {
                     number: songItem.querySelector(".song-number").textContent,
                     title: titleElem ? titleElem.textContent : songItem.querySelector(".song-info").textContent,
                     artist: artistElem ? artistElem.textContent : "",
+                    albumName: albumnameElem ? albumnameElem.textContent : "",
+                    year: yearElem ? yearElem.textContent : "",
                     albumArt: songItem.querySelector("img").src
                 };
+
+                document.getElementById("songName").textContent = selectedSong.title;
+                document.getElementById("artistName").textContent = selectedSong.artist;
+                document.getElementById("albumName").textContent = selectedSong.albumName;
+                document.getElementById("year").textContent = selectedSong.year;
 
                 console.log("Selected song:", selectedSong);
             });
