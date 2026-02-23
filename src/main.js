@@ -61,6 +61,20 @@ fetch('/custom.geo.json')
       });
   });
 
+fetch('https://audio-atlas-senior-project.onrender.com/api/test')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // or .text() if it's not JSON
+  })
+  .then(data => {
+    console.log('API response:', data);
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
+
 document.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("togglePlayer");
     const player = document.getElementById("musicPlayer");
