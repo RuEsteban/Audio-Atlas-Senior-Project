@@ -277,7 +277,7 @@ p {
     transition: transform 0.4s ease;
 }
 
-    .info.hidden {
+    .info.show {
         transform: translateX(0);
     }
 
@@ -303,6 +303,17 @@ p {
             margin-top: 12%;
             margin-bottom: 0px;
         }
+
+    .info .exit-button {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: black;
+    }
 
 .custom-dropdown {
     width: 80%;

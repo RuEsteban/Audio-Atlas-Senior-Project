@@ -10,7 +10,11 @@ const globeContainer = document.getElementById('globe');
 // Country song data placeholder
 let currCountry = null;
 let topSongsArray =  null;
-let countryName;
+
+const countryName = document.getElementById("countryName");
+const player = document.getElementById("musicPlayer");
+const optionContainer = document.getElementById("options");
+const topSongs = document.getElementById("topSongs");
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -88,22 +92,20 @@ fetch('/custom.geo.json')
         if(countryName){
           countryName.textContent = currCountry.name;
         }
+
+        player.classList.add("show");
+        optionContainer.classList.add("hidden");
+        topSongs.classList.add("show");
       });
   });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("togglePlayer");
-    const player = document.getElementById("musicPlayer");
-    const optionContainer = document.getElementById("options");
-    const topSongs = document.getElementById("topSongs");
-
-    countryName = document.getElementById("countryName");
-  
-    // Toggle music player, options, and top songs popup
-    button.addEventListener("click", () => {
-        player.classList.toggle("show");
-        optionContainer.classList.toggle("hidden");
-        topSongs.classList.toggle("hidden");
+    // exit button for music player
+    const exitButton = document.getElementById("closeTopSongs");
+    exitButton.addEventListener("click", () => {
+        player.classList.remove("show");
+        optionContainer.classList.remove("hidden");
+        topSongs.classList.remove("show");
     });
 
     // Database selector
