@@ -26,6 +26,51 @@ function jsonResponse(status, body) {
     }
 }
 
+function makeFakeSupabase({ shouldError = false } = {}) {
+  return {
+    from() {
+      return {
+        select() {
+          return {
+            async limit() {
+              if (shouldError) return { data: null, error: { message: 'db error' } }
+              return { data: [{ id: 1 }], error: null }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+test('GET /health/supabase returns ok=true when query succeeds', async () => {
+  const app = buildApp({ enableSupabase: false })
+
+  // IMPORTANT: decorate BEFORE inject triggers app readiness
+  app.decorate('supabase', makeFakeSupabase())
+
+  const res = await app.inject({ method: 'GET', url: '/health/supabase' })
+  await app.close()
+
+  assert.equal(res.statusCode, 200)
+  const body = res.json()
+  assert.equal(body.provider, 'supabase')
+  assert.equal(body.ok, true)
+})
+
+test('GET /health/supabase returns ok=false when query errors', async () => {
+  const app = buildApp({ enableSupabase: false })
+  app.decorate('supabase', makeFakeSupabase({ shouldError: true }))
+
+  const res = await app.inject({ method: 'GET', url: '/health/supabase' })
+  await app.close()
+
+  assert.equal(res.statusCode, 502)
+  const body = res.json()
+  assert.equal(body.provider, 'supabase')
+  assert.equal(body.ok, false)
+})
+
 test('GET /health/spotify returns ok=true when Spotify token + API succeed', async () => {
     process.env.SPOTIFY_CLIENT_ID = 'x'
     process.env.SPOTIFY_CLIENT_SECRET = 'y'

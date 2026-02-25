@@ -5,11 +5,16 @@ import testRoute2 from './routes/demo2/userRoutes.js'
 import healthRoutes from './routes/health/healthRoutes.js'
 import supabaseHealth from './routes/health/supabaseHealth.js'
 
-export function buildApp() {
+export function buildApp({ enableSupabase = true } = {}) {
     const fastify = Fastify({ logger: false})
-    fastify.register(supabaseConnector)
+
+    if (enableSupabase) {
+        fastify.register(supabaseConnector)
+    }
+
     fastify.register(testRoute)
     fastify.register(testRoute2)
     fastify.register(healthRoutes)
+    fastify.register(supabaseHealth)
     return fastify
 }
