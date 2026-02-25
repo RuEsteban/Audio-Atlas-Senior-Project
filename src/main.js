@@ -1,10 +1,16 @@
 import Globe from 'globe.gl'
 import './styles.css'
 import * as turf from '@turf/turf'
+import { Country } from "./Country.js"
 
 //import * as THREE from 'three'
 
 const globeContainer = document.getElementById('globe');
+
+// Country song data placeholder
+let currCountry = null;
+let topSongsArray =  null;
+let countryName;
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -51,28 +57,38 @@ fetch('/custom.geo.json')
       })
 
       .onPolygonClick(d => {
-        console.log(d.properties);
+        console.log(d.properties.name);
         
         const [lng, lat] = d.properties.centroid;
         globe.pointOfView(
           { lat, lng, altitude: 1 }, // zoom altitude
           1000 // how fast
         );
-      });
-  });
 
-fetch('https://audio-atlas-senior-project.onrender.com/api/test')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json(); // or .text() if it's not JSON
-  })
-  .then(data => {
-    console.log('API response:', data);
-  })
-  .catch(error => {
-    console.error('Fetch error:', error);
+        // Get song data from database  
+        fetch('https://audio-atlas-senior-project.onrender.com/api/test')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('API response:', data);
+            topSongsArray = data.topSongs;
+            populateSongList(topSongsArray);
+          })
+          .catch(error => {
+            console.error('Fetch error:', error);
+          });
+
+        // create country object with name and songs
+        currCountry = new Country(d.properties.name, topSongsArray);
+
+        if(countryName){
+          countryName.textContent = currCountry.name;
+        }
+      });
   });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -81,6 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const optionContainer = document.getElementById("options");
     const topSongs = document.getElementById("topSongs");
 
+    countryName = document.getElementById("countryName");
+  
     // Toggle music player, options, and top songs popup
     button.addEventListener("click", () => {
         player.classList.toggle("show");
@@ -126,41 +144,38 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // Song selector
-    const songList = document.querySelector(".songList ul"); 
-    let selectedSong = null; 
-
-    if (songList) {
-        songList.querySelectorAll("li").forEach(songItem => {
-            songItem.addEventListener("click", () => {
-                songList.querySelectorAll("li").forEach(item => {
-                    item.classList.remove("selected-song");
-                });
-
-                songItem.classList.add("selected-song");
-
-                const titleElem = songItem.querySelector(".song-info .title");
-                const artistElem = songItem.querySelector(".song-info .artist");
-                const albumnameElem = songItem.querySelector(".song-info .album-name");
-                const yearElem = songItem.querySelector(".song-info .year");
-
-                selectedSong = {
-                    number: songItem.querySelector(".song-number").textContent,
-                    title: titleElem ? titleElem.textContent : songItem.querySelector(".song-info").textContent,
-                    artist: artistElem ? artistElem.textContent : "",
-                    albumName: albumnameElem ? albumnameElem.textContent : "",
-                    year: yearElem ? yearElem.textContent : "",
-                    albumArt: songItem.querySelector("img").src
-                };
-
-                document.getElementById("songName").textContent = selectedSong.title;
-                document.getElementById("artistName").textContent = selectedSong.artist;
-                document.getElementById("albumName").textContent = selectedSong.albumName;
-                document.getElementById("year").textContent = selectedSong.year;
-
-                console.log("Selected song:", selectedSong);
-            });
-        });
-    }
 });
+
+function populateSongList(songs) {
+  const songList = document.querySelector("#songList ul");
+  songList.innerHTML = ""; // clear existing songs
+
+  songs.forEach(song => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <div class="song-number">${song.rank}</div>
+      <img src="/img/default-album.png" alt="Album" />
+      <div class="song-info">
+        <span class="title">${song.title}</span>
+        <span class="artist">${song.artist}</span>
+        <span class="album">${song.album}</span>
+        <span class="year">${song.year}</span>
+      </div>
+    `;
+
+    li.addEventListener("click", () => {
+      document.querySelectorAll("#songList li").forEach(item =>
+        item.classList.remove("selected-song")
+      );
+      li.classList.add("selected-song");
+
+      document.getElementById("songName").textContent = song.title;
+      document.getElementById("artistName").textContent = song.artist;
+
+      console.log("Selected song:", song);
+    });
+
+    songList.appendChild(li);
+  });
+}
