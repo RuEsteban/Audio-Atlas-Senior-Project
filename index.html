@@ -8,14 +8,12 @@
 <body>
 	<h1>Audio Atlas</h1>
 
-	<button id="togglePlayer">Music Bar</button>
-
 	<div id="musicPlayer" class="player">
 		<div class="songInfo">
-			<strong>Title</strong>
-			<p>Artist</p>
-			<p>Album</p>
-			<p>Year</p>
+			<strong id="songName"></strong>
+			<p id="artistName"></p>
+			<p id="albumName"></p>
+			<p id="year"></p>
 		</div>
 
 		<div class="centerColumn">
@@ -72,8 +70,9 @@
 
 	<div id="topSongs" class="info">
 		<div class="header">
-			<h1>Country's Top Songs</h1>
+			<h1><span id="countryName">Country</span>'s Top Songs</h1>
 			<p>Week of:</p>
+			<button id="closeTopSongs" class="exit-button">x</button>
 		</div>
 
 		<div class="custom-dropdown">
@@ -93,6 +92,8 @@
 					<div class="song-info">
 						<span class="title">Song 1</span>
 						<span class="artist">Artist A</span>
+						<span class="album-name">Album A</span>
+						<span class="year">2024</span>
 					</div>
 				</li>
 				<li>
@@ -101,6 +102,8 @@
 					<div class="song-info">
 						<span class="title">Song 2</span>
 						<span class="artist">Artist B</span>
+						<span class="album-name">Album B</span>
+						<span class="year">2025</span>
 					</div>
 				</li>
 			</ul>

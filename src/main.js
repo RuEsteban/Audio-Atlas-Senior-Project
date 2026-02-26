@@ -1,10 +1,20 @@
 import Globe from 'globe.gl'
 import './styles.css'
 import * as turf from '@turf/turf'
+import { Country } from "./Country.js"
 
 //import * as THREE from 'three'
 
 const globeContainer = document.getElementById('globe');
+
+// Country song data placeholder
+let currCountry = null;
+let topSongsArray =  null;
+
+const countryName = document.getElementById("countryName");
+const player = document.getElementById("musicPlayer");
+const optionContainer = document.getElementById("options");
+const topSongs = document.getElementById("topSongs");
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -51,27 +61,51 @@ fetch('/custom.geo.json')
       })
 
       .onPolygonClick(d => {
-        console.log(d.properties);
+        console.log(d.properties.name);
         
         const [lng, lat] = d.properties.centroid;
         globe.pointOfView(
           { lat, lng, altitude: 1 }, // zoom altitude
           1000 // how fast
         );
+
+        // Get song data from database  
+        fetch('https://audio-atlas-senior-project.onrender.com/api/test')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('API response:', data);
+            topSongsArray = data.topSongs;
+            populateSongList(topSongsArray);
+          })
+          .catch(error => {
+            console.error('Fetch error:', error);
+          });
+
+        // create country object with name and songs
+        currCountry = new Country(d.properties.name, topSongsArray);
+
+        if(countryName){
+          countryName.textContent = currCountry.name;
+        }
+
+        player.classList.add("show");
+        optionContainer.classList.add("hidden");
+        topSongs.classList.add("show");
       });
   });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("togglePlayer");
-    const player = document.getElementById("musicPlayer");
-    const optionContainer = document.getElementById("options");
-    const topSongs = document.getElementById("topSongs");
-
-    // Toggle music player, options, and top songs popup
-    button.addEventListener("click", () => {
-        player.classList.toggle("show");
-        optionContainer.classList.toggle("hidden");
-        topSongs.classList.toggle("hidden");
+    // exit button for music player
+    const exitButton = document.getElementById("closeTopSongs");
+    exitButton.addEventListener("click", () => {
+        player.classList.remove("show");
+        optionContainer.classList.remove("hidden");
+        topSongs.classList.remove("show");
     });
 
     // Database selector
@@ -112,32 +146,38 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // Song selector
-    const songList = document.querySelector(".songList ul"); 
-    let selectedSong = null; 
-
-    if (songList) {
-        songList.querySelectorAll("li").forEach(songItem => {
-            songItem.addEventListener("click", () => {
-                songList.querySelectorAll("li").forEach(item => {
-                    item.classList.remove("selected-song");
-                });
-
-                songItem.classList.add("selected-song");
-
-                const titleElem = songItem.querySelector(".song-info .title");
-                const artistElem = songItem.querySelector(".song-info .artist");
-
-                selectedSong = {
-                    number: songItem.querySelector(".song-number").textContent,
-                    title: titleElem ? titleElem.textContent : songItem.querySelector(".song-info").textContent,
-                    artist: artistElem ? artistElem.textContent : "",
-                    albumArt: songItem.querySelector("img").src
-                };
-
-                console.log("Selected song:", selectedSong);
-            });
-        });
-    }
 });
+
+function populateSongList(songs) {
+  const songList = document.querySelector("#songList ul");
+  songList.innerHTML = ""; // clear existing songs
+
+  songs.forEach(song => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <div class="song-number">${song.rank}</div>
+      <img src="/img/default-album.png" alt="Album" />
+      <div class="song-info">
+        <span class="title">${song.title}</span>
+        <span class="artist">${song.artist}</span>
+        <span class="album">${song.album}</span>
+        <span class="year">${song.year}</span>
+      </div>
+    `;
+
+    li.addEventListener("click", () => {
+      document.querySelectorAll("#songList li").forEach(item =>
+        item.classList.remove("selected-song")
+      );
+      li.classList.add("selected-song");
+
+      document.getElementById("songName").textContent = song.title;
+      document.getElementById("artistName").textContent = song.artist;
+
+      console.log("Selected song:", song);
+    });
+
+    songList.appendChild(li);
+  });
+}
