@@ -49,3 +49,28 @@ export async function fetchLastfmGeoTopTracks({ countryName, limit = 10, page = 
     if (!res.ok) throw Object.assign(new Error(`Last.fm geo.gettoptracks failed (${res.status})`), { details: json })
     return json
 }
+
+/**
+ * Attempt to get album and release year information from Lastfm.
+ * In geo.gettoptracks, this information is not reliably present
+ * Utilize track.getInfo to pull/associate this information
+ */
+
+export async function fetchLastfmTrackInfo({ mbid, artistName, trackName } = {}) {
+  if (!mbid && (!artistName || !trackName)) {
+    throw new Error('fetchLastfmTrackInfo requires mbid OR (artistName + trackName)')
+  }
+
+  const url = buildLastfmUrl({
+    method: 'track.getInfo',
+    mbid: mbid || undefined,
+    artist: mbid ? undefined : artistName,
+    track: mbid ? undefined : trackName,
+    autocorrect: 1
+  })
+
+  const res = await fetchWithTimeout(url.toString())
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw Object.assign(new Error(`Last.fm track.getInfo failed (${res.status})`), { details: json })
+  return json
+}
