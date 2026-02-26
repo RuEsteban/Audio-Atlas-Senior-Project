@@ -1,6 +1,6 @@
 // server/src/services/chartAggregationService.js
 
-import { fetchLastfmGeoTopTracks } from '../apiClient/lastfmClient.js';
+import { fetchLastfmGeoTopTracks, fetchLastfmTrackInfo } from '../apiClient/lastfmClient.js';
 import { buildChartKey, upsertMusicCharts } from '../database/chartsInsertRepo.js';
 
 function isoDate(d = new Date()) {
@@ -30,6 +30,43 @@ function toLastfmCountryName(iso2) {
     return ISO2_TO_LASTFM_COUNTRY[key] ?? null
 }
 
+/**
+ * Minimize concurrency on the track.getInfo calls
+ * Limit concurrency to ~3-5 to prevent getting rate-limited
+ */
+
+function parsePublishedYear(published) {
+  // Example: "15 Jan 2007, 00:00"
+  if (!published) return null
+  const m = String(published).match(/\b(19|20)\d{2}\b/)
+  return m ? Number(m[0]) : null
+}
+
+/**
+ * Additional fallback attempting to populate release date
+ */
+
+function parseYearFromString(s) {
+  if (!s) return null
+  const m = String(s).match(/\b(19|20)\d{2}\b/)
+  return m ? Number(m[0]) : null
+}
+
+
+
+async function mapLimit(items, limit, fn) {
+  const results = new Array(items.length)
+  let i = 0
+  const workers = Array.from({ length: limit }, async () => {
+    while (i < items.length) {
+      const idx = i++
+      results[idx] = await fn(items[idx], idx)
+    }
+  })
+  await Promise.all(workers)
+  return results
+}
+
 export async function ingestLastfmCountryTopTracks({
     supabase,
     country,              // ISO2 stored in DB, e.g. "US"
@@ -46,13 +83,38 @@ export async function ingestLastfmCountryTopTracks({
     }
 
     const payload = await fetchLastfmGeoTopTracks({ countryName, limit })
-    const tracks = payload?.toptracks?.track ?? payload?.tracks?.track ?? [] // defensive
+    const tracks = payload?.toptracks?.track ?? payload?.tracks?.track ?? []
 
-    const rows = tracks.map((t, idx) => {
-        const rank = idx + 1
+    // limit attempts of concurrency
+
+    const enriched = await mapLimit(tracks, 4, async (t) => {
         const trackName = t?.name ?? null
         const artistName = t?.artist?.name ?? t?.artist ?? null
         const lastfmMbid = t?.mbid || null
+
+        let albumName = null
+        let releaseYear = null
+
+        try {
+            const info = await fetchLastfmTrackInfo({ mbid: lastfmMbid, artistName, trackName })
+            const track = info?.track
+
+            albumName = track?.album?.title ?? null
+            // Year is often only available via wiki.published (not always present)
+            releaseYear =
+                parseYearFromString(track?.wiki?.published) ??
+                parseYearFromString(track?.album?.releasedate) ??
+                null
+                
+        } catch (e) {
+            // Swallow enrichment failures to avoid failing ingestion
+        }
+
+        return { t, trackName, artistName, lastfmMbid, albumName, releaseYear }
+    })
+
+    const rows = enriched.map(({ t, trackName, artistName, lastfmMbid, albumName, releaseYear }, idx) => {
+        const rank = idx + 1
 
         const chart_key = buildChartKey({
             chartDate,
@@ -66,7 +128,6 @@ export async function ingestLastfmCountryTopTracks({
             artistName
         })
 
-        // album/year are not reliably present in Last.fm geo top tracks
         return {
             chart_key,
             source,
@@ -74,10 +135,11 @@ export async function ingestLastfmCountryTopTracks({
             country,
             chart_type: chartType,
             rank,
+
             track_name: trackName,
             artist_name: artistName,
-            album_name: null,
-            release_year: null,
+            album_name: albumName,
+            release_year: releaseYear,
 
             spotify_track_id: null,
             spotify_popularity: null,
