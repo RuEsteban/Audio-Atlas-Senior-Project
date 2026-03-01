@@ -10,7 +10,7 @@ const start = async () => {
       host: '0.0.0.0'
     })
 
-    fastify.log.info('Server running at http://localhost:${process.env.PORT || 4000}')
+    fastify.log.info(`Server running at http://localhost:${process.env.PORT || 4000}`)
     
   } catch (err) {
     fastify.log.error(err)
