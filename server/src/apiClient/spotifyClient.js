@@ -63,7 +63,7 @@ async function spotifyRequest(endpoint, params = {}, retries = 1) {
 
         // Implement Spotify 429 handling to prevent ingestion failures and pipeline instability
         // Retry once after 10 seconds and then fail cleanly to prevent hang ups
-        
+
         if (response.status === 429) {
             const retryAfter = parseInt(response.headers.get('retry-after') || '1', 10);
 
@@ -104,6 +104,4 @@ async function searchTrack(trackName, artistName) {
     return data.tracks?.items?.[0] || null;
 }
 
-module.exports = {
-    searchTrack
-};
+export { searchTrack };

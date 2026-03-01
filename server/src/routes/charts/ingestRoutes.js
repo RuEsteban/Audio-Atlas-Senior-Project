@@ -12,15 +12,16 @@ export default async function ingestRoutes(fastify) {
         const country = (body.country ?? '').toUpperCase()
         const limit = body.limit ? Number(body.limit) : 10
         const chartType = body.chartType ?? 'top_tracks'
-        const chartDate = body.chartDate        // optional YYYY-MM-DD
+        const chartDate = body.chartDate ? String(body.chartDate) : null;       // optional YYYY-MM-DD
 
         const result = await ingestLastfmCountryTopTracks({
             supabase: fastify.supabase,
             country,
             limit,
             chartType,
-            chartDate
-        })
+            ...(chartDate ? { chartDate } : {})
+        });
+        
         return reply.send({ ok: true, ...result})
     })
 }
