@@ -47,39 +47,29 @@ function selectCountry(d) {
   console.log(d.properties.name);
 
   const [lng, lat] = d.properties.centroid;
-  globe.pointOfView(
-    { lat, lng, altitude: 1 },
-    1000
-  );
+  globe.pointOfView({ lat, lng, altitude: 1 }, 1000);
 
-  // Get song data from database  
   fetch('https://audio-atlas-senior-project.onrender.com/api/test')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       console.log('API response:', data);
       topSongsArray = data.topSongs;
       populateSongList(topSongsArray);
+
+      currCountry = new Country(d.properties.name, topSongsArray);
+
+      if (countryName) {
+        countryName.textContent = currCountry.name;
+      }
+
+      player.classList.add("show");
+      optionContainer.classList.add("hidden");
+      topSongs.classList.add("show");
     })
     .catch(error => {
       console.error('Fetch error:', error);
     });
-
-  currCountry = new Country(d.properties.name, topSongsArray);
-
-  if (countryName) {
-    countryName.textContent = currCountry.name;
-    fitHeaderText(countryName);
-  }
-
-  player.classList.add("show");
-  optionContainer.classList.add("hidden");
-  topSongs.classList.add("show");
-}
+} // <-- close selectCountry here
 
 fetch('/custom.geo.json')
   .then(res => res.json())
