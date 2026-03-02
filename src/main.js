@@ -11,6 +11,13 @@ const globeContainer = document.getElementById('globe');
 let currCountry = null;
 let topSongsArray =  null;
 
+
+// search bar
+let countryFeatures = [];
+let fuse;
+const input = document.getElementById("countryInput");
+const suggestions = document.getElementById("suggestions");
+
 const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
 const optionContainer = document.getElementById("options");
@@ -36,6 +43,34 @@ globe.camera().position.z = 300;
 let hover = null;
 let select = null;
 
+function selectCountry(d) {
+  console.log(d.properties.name);
+
+  const [lng, lat] = d.properties.centroid;
+  globe.pointOfView({ lat, lng, altitude: 1 }, 1000);
+
+  fetch('https://audio-atlas-senior-project.onrender.com/api/test')
+    .then(response => response.json())
+    .then(data => {
+      console.log('API response:', data);
+      topSongsArray = data.topSongs;
+      populateSongList(topSongsArray);
+
+      currCountry = new Country(d.properties.name, topSongsArray);
+
+      if (countryName) {
+        countryName.textContent = currCountry.name;
+      }
+
+      player.classList.add("show");
+      optionContainer.classList.add("hidden");
+      topSongs.classList.add("show");
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+} // <-- close selectCountry here
+
 fetch('/custom.geo.json')
   .then(res => res.json())
   .then(data => {
@@ -44,6 +79,14 @@ fetch('/custom.geo.json')
       const centroid = turf.centroid(feature);
       feature.properties.centroid = centroid.geometry.coordinates;
       return feature;
+    });
+
+    countryFeatures = countries;
+
+    const countryNames = countries.map(c => c.properties.name);
+
+    fuse = new Fuse(countryNames, {
+      threshold: 0.3
     });
 
     globe
@@ -60,43 +103,7 @@ fetch('/custom.geo.json')
         );
       })
 
-      .onPolygonClick(d => {
-        console.log(d.properties.name);
-        
-        const [lng, lat] = d.properties.centroid;
-        globe.pointOfView(
-          { lat, lng, altitude: 1 }, // zoom altitude
-          1000 // how fast
-        );
-
-        // Get song data from database  
-        fetch('https://audio-atlas-senior-project.onrender.com/api/test')
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log('API response:', data);
-            topSongsArray = data.topSongs;
-            populateSongList(topSongsArray);
-          })
-          .catch(error => {
-            console.error('Fetch error:', error);
-          });
-
-        // create country object with name and songs
-        currCountry = new Country(d.properties.name, topSongsArray);
-
-        if(countryName){
-          countryName.textContent = currCountry.name;
-        }
-
-        player.classList.add("show");
-        optionContainer.classList.add("hidden");
-        topSongs.classList.add("show");
-      });
+      .onPolygonClick(d => selectCountry(d));
   });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -181,3 +188,34 @@ function populateSongList(songs) {
     songList.appendChild(li);
   });
 }
+
+input.addEventListener("input", () => {
+  if (!fuse) return;
+
+  const value = input.value.trim();
+  suggestions.innerHTML = "";
+
+  if (!value) return;
+
+  const results = fuse.search(value);
+
+  results.slice(0, 5).forEach(result => {
+    const li = document.createElement("li");
+    li.textContent = result.item;
+
+    li.addEventListener("click", () => {
+      input.value = result.item;
+      suggestions.innerHTML = "";
+
+      const country = countryFeatures.find(
+        c => c.properties.name === result.item
+      );
+
+      if (country) {
+        selectCountry(country);
+      }
+    });
+
+    suggestions.appendChild(li);
+  });
+});

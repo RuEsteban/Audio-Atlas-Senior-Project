@@ -68,9 +68,16 @@
 		</form>
 	</div>
 
+	<div id="searchBar">
+  		<input type="text" id="countryInput" placeholder="Search for a country..." />
+  		<ul id="suggestions"></ul>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
 	<div id="topSongs" class="info">
 		<div class="header">
-			<h1><span id="countryName">Country</span>'s Top Songs</h1>
+			<h1><span id="countryName">Country</span></h1>
 			<p>Week of:</p>
 			<button id="closeTopSongs" class="exit-button">x</button>
 		</div>
