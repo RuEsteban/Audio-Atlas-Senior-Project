@@ -29,7 +29,7 @@ async function getAccessToken() {
     });
 
     if (!response.ok) {
-        throw new Error(`Spotify token error: ${response.status}`);
+        throw new Error(`Spotify API error: ${response.status} url=${url}`);
     }
 
     const data = await response.json();
@@ -60,6 +60,10 @@ async function spotifyRequest(endpoint, params = {}, retries = 1) {
         });
 
         clearTimeout(timeout);
+
+        if (response.status === 404) {
+            throw new Error('Spotify charts playlists are not accessible via this API access level (404).')
+}
 
         // Implement Spotify 429 handling to prevent ingestion failures and pipeline instability
         // Retry once after 10 seconds and then fail cleanly to prevent hang ups
@@ -92,6 +96,34 @@ async function spotifyRequest(endpoint, params = {}, retries = 1) {
         throw error;
     }
 }
+
+export async function getTrackById(trackId, { market } = {}) {
+    if (!trackId) return null;
+    return await spotifyRequest(`/tracks/${encodeURIComponent(trackId)}`, market ? { market } : {});
+}
+
+export async function getPlaylistTopTracks(playlistId, { limit = 10, market } = {}) {
+    if (!playlistId) throw new Error('playlistId is required');
+
+    // Spotify playlist tracks endpoint:
+    // GET /v1/playlists/{playlist_id}/tracks
+    // We request only what we need to reduce payload size.
+    const fields =
+        'items(added_at,track(id,name,artists(name),album(name,release_date),popularity,external_urls)),' +
+        'total';
+
+    const data = await spotifyRequest(
+        `/playlists/${encodeURIComponent(playlistId)}/tracks`,
+        {
+            limit,
+            ...(market ? { market } : {}),
+            fields
+        }
+    );
+
+    return data?.items ?? [];
+}
+
 async function searchTrack(trackName, artistName) {
     const query = `track:${trackName} artist:${artistName}`;
 

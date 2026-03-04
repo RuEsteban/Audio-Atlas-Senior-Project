@@ -20,9 +20,6 @@ export function buildChartKey({
 
     const externalId = spotifyTrackId ?? lastfmMbid ?? fallback
 
-    // console log to test buildChartKey (delete after troubleshooting later in the project / Lance)
-    console.log('buildChartKey output:', `${chartDate}:${country}:${chartType}:${source}:${rank}:${externalId}`)
-
     return `${chartDate}:${country}:${chartType}:${source}:${rank}:${externalId}`
 }
 
