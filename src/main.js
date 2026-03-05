@@ -153,7 +153,90 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    // connect to audio
+    const audio = document.getElementById("audioPlayer");
+    const playButton = document.querySelector(".playButton button");
+
+    const timelineBar = document.getElementById("timelineBar");
+    const barContainer = document.getElementById("barContainer");
+
+    const currentTime = document.getElementById("currentTime");
+    const fullTime = document.getElementById("fullTime");
+
+    // play or pause button
+    playButton.addEventListener("click", () => {
+        if (audio.paused) {
+            audio.play();
+            playButton.textContent = "❚❚";
+        }
+        else {
+            audio.pause();
+            playButton.textContent = "▶";
+        }
+    });
+
+    // update progress bar (out of 30 seconds)
+    audio.addEventListener("timeupdate", () => {
+      if (!audio.duration) {
+        return;
+      }
+
+      const percent = (audio.currentTime / audio.duration) * 100;
+      timelineBar.style.width = percent + "%";
+      currentTime.textContent = convertToMins(audio.currentTime);
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+      fullTime.textContent = convertToMins(audio.duration);
+    });
+
+    audio.addEventListener("ended", () => {
+      playButton.textContent = "▶";
+      timelineBar.style.width = "0%";
+    });
+
+    async function testPreview() {
+    try {
+        // http get request sent, retrieves song data
+        let title = "DtMF";
+        let artist = "Bad Bunny";
+        let search = encodeURIComponent(`${title} ${artist}`);
+        let country = "us";
+
+        const res = await fetch(
+        `https://itunes.apple.com/search?term=${search}&entity=song&limit=1&country=${country}`
+        );
+
+        const data = await res.json();
+
+        if (!data.results[0].previewUrl) {
+            console.log("No preview");
+            return;
+        }
+
+        // extract URL
+        const previewUrl = data.results[0].previewUrl;
+        console.log("Audio Preview URL:", previewUrl);
+        audio.src = previewUrl;
+
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
+    }
+
+    testPreview();
 });
+
+function convertToMins(time) {
+  const mins = Math.floor(time / 60);
+  let secs = Math.floor(time - mins * 60);
+
+  if (secs < 10) {
+    secs = secs.toString().padStart(2, "0");
+  }
+
+  return `${mins}:${secs}`;
+}
 
 function populateSongList(songs) {
   const songList = document.querySelector("#songList ul");
