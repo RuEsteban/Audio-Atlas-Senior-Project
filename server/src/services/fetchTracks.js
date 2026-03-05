@@ -1,9 +1,9 @@
 import trackRepo from '../database/trackRepo.js'
 
-const fetchTopTracks = async (date, country) => {
+const fetchTopTracks = async (source, date, country) => {
   try {
   // get raw data from the database 
-  const rawData = await trackRepo(date, country)
+  const rawData = await trackRepo(source, date, country)
 
   // change supabase format to json 
     const tracks = rawData.map(track => ({
@@ -13,8 +13,6 @@ const fetchTopTracks = async (date, country) => {
       artist: track.artist_name
     }))
   return {
-    date,
-    country, 
     topSongs: rawData
   };
   } catch (error) {

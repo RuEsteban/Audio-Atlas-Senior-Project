@@ -2,9 +2,9 @@ import fetchTopTracks from '../services/fetchTracks.js'
 
 const getTopTracks = async (request, reply) => {
     try {
-        const {date, country} = request.params
+        const {source, date, country} = request.params
 
-        const data = await fetchTopTracks(date, country)
+        const data = await fetchTopTracks(source, date, country)
 
         return reply.send(data)
     } catch (error) {

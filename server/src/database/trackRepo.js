@@ -1,9 +1,10 @@
 import supabase from './supabaseClient.js'
 
-const trackRepo = async (date, country) => {
+const trackRepo = async (source, date, country) => {
     const { data, error } = await supabase
     .from('music_charts')
-    .select('rank, track_name, artist_name')
+    .select('rank, artist_name, track_name, album_name, release_year')
+    .eq('source', source)
     .eq('country', country)
     .eq('chart_date', date)
     .order('rank', { ascending: true })
