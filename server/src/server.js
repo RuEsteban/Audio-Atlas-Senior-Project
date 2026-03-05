@@ -1,25 +1,11 @@
-import Fastify from 'fastify'
+import { buildApp } from './app.js'
+import cors from '@fastify/cors';
 
-import supabaseConnector from './database/supabaseConnector.js'
+const fastify = buildApp()
 
-import testRoute from './routes/test/testRoute.js'
-import testRoute2 from './routes/test2/userRoutes.js'
-
-import healthRoutes from './routes/health/healthRoutes.js'
-import supabaseHealth from './routes/health/supabaseHealth.js'
-
-const fastify = Fastify({
-  logger: true
-})
-
-// SUPABASE CONNECTION //
-fastify.register(supabaseConnector)
-
-// ROUTES //
-fastify.register(testRoute)
-fastify.register(testRoute2)
-fastify.register(healthRoutes)
-fastify.register(supabaseHealth)
+fastify.register(cors, { 
+  origin: true
+});
 
 //Run the server
 const start = async () => {
@@ -28,6 +14,9 @@ const start = async () => {
       port: process.env.PORT || 4000,
       host: '0.0.0.0'
     })
+
+    fastify.log.info(`Server running at http://localhost:${process.env.PORT || 4000}`)
+    
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
