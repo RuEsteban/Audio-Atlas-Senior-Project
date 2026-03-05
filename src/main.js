@@ -2,6 +2,7 @@ import Globe from 'globe.gl'
 import './styles.css'
 import * as turf from '@turf/turf'
 import { Country } from "./Country.js"
+//import { build } from 'vite';
 
 //import * as THREE from 'three'
 
@@ -11,6 +12,18 @@ const globeContainer = document.getElementById('globe');
 let currCountry = null;
 let topSongsArray =  null;
 
+//string to build fetch url
+// example: https://audio-atlas-senior-project.onrender.com/api/lastfm/2026-03-01/US/top-tracks
+let fetchURL = "https://audio-atlas-senior-project.onrender.com/api";
+
+// database string
+let selectedDatabase = "lastfm";
+
+// week string, default current week  
+let selectedWeek = "2026-03-01";
+
+// selected country ISO
+let selectedCountryISO = null;
 
 // search bar
 let countryFeatures = [];
@@ -44,32 +57,33 @@ let hover = null;
 let select = null;
 
 function selectCountry(d) {
-  console.log(d.properties.name);
+  selectedWeek = "2026-03-01";
+
+  if (!selectedDatabase) {
+    alert("Please select a database first.");
+    return;
+  }
+
+  console.log("Name:",d.properties.name);
+  console.log("ISO Alpha-2:", d.properties.iso_a2);
+
+  selectedCountryISO = d.properties.iso_a2;
 
   const [lng, lat] = d.properties.centroid;
   globe.pointOfView({ lat, lng, altitude: 1 }, 1000);
 
-  fetch('https://audio-atlas-senior-project.onrender.com/api/test')
-    .then(response => response.json())
-    .then(data => {
-      console.log('API response:', data);
-      topSongsArray = data.topSongs;
-      populateSongList(topSongsArray);
+  fetchTopSongs(selectedCountryISO);
 
-      currCountry = new Country(d.properties.name, topSongsArray);
+  currCountry = new Country(d.properties.name, topSongsArray);
 
-      if (countryName) {
-        countryName.textContent = currCountry.name;
-      }
+  if (countryName) {
+    countryName.textContent = currCountry.name;
+  }
 
-      player.classList.add("show");
-      optionContainer.classList.add("hidden");
-      topSongs.classList.add("show");
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
-    });
-} // <-- close selectCountry here
+  player.classList.add("show");
+  optionContainer.classList.add("hidden");
+  topSongs.classList.add("show");
+}
 
 fetch('/custom.geo.json')
   .then(res => res.json())
@@ -117,12 +131,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Database selector
     const radios = document.querySelectorAll('input[name="database"]');
-    let selectedDatabase = null;
-
     radios.forEach(radio => {
         radio.addEventListener('change', () => {
             selectedDatabase = radio.value;
             console.log("Selected database:", selectedDatabase);
+
         });
     });
 
@@ -131,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dropdown) {
         const selected = dropdown.querySelector(".selected");
         const optionsList = dropdown.querySelector(".options");
-        let selectedWeek = selected.textContent;
+        selectedWeek = selected.textContent;
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
@@ -144,6 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 optionsList.style.display = "none";
                 selectedWeek = option.getAttribute("data-value");
                 console.log("Selected week:", selectedWeek);
+                if (selectedCountryISO) {
+                  fetchTopSongs(selectedCountryISO);
+                } 
             });
         });
 
@@ -238,6 +254,24 @@ function convertToMins(time) {
   return `${mins}:${secs}`;
 }
 
+function fetchTopSongs(countryISO) {
+
+  let buildURL = `${fetchURL}/${selectedDatabase}/${selectedWeek}/${countryISO}/top-tracks`;
+  console.log("Fetch URL:", buildURL);
+
+  fetch(buildURL)
+    .then(response => response.json())
+    .then(data => {
+      console.log("API response:", data);
+
+      topSongsArray = data.topSongs;
+      populateSongList(topSongsArray);
+    })
+    .catch(error => {
+      console.error("Fetch error:", error);
+    });
+}
+
 function populateSongList(songs) {
   const songList = document.querySelector("#songList ul");
   songList.innerHTML = ""; // clear existing songs
@@ -249,10 +283,10 @@ function populateSongList(songs) {
       <div class="song-number">${song.rank}</div>
       <img src="/img/default-album.png" alt="Album" />
       <div class="song-info">
-        <span class="title">${song.title}</span>
-        <span class="artist">${song.artist}</span>
-        <span class="album">${song.album}</span>
-        <span class="year">${song.year}</span>
+        <span class="title">${song.track_name}</span>
+        <span class="artist">${song.artist_name}</span>
+        <span class="album">${song.album_name}</span>
+        <span class="year">${song.release_year}</span>
       </div>
     `;
 
@@ -260,10 +294,11 @@ function populateSongList(songs) {
       document.querySelectorAll("#songList li").forEach(item =>
         item.classList.remove("selected-song")
       );
+
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = song.title;
-      document.getElementById("artistName").textContent = song.artist;
+      document.getElementById("songName").textContent = song.track_name;
+      document.getElementById("artistName").textContent = song.artist_name;
 
       console.log("Selected song:", song);
     });
