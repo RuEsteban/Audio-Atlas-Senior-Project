@@ -3,6 +3,10 @@ import cors from '@fastify/cors';
 
 const fastify = buildApp()
 
+fastify.register(cors, { 
+  origin: true
+});
+
 //Run the server
 const start = async () => {
   try {
@@ -10,10 +14,6 @@ const start = async () => {
       port: process.env.PORT || 4000,
       host: '0.0.0.0'
     })
-
-    fastify.register(cors, { 
-      origin: true
-    });
 
     fastify.log.info(`Server running at http://localhost:${process.env.PORT || 4000}`)
     
