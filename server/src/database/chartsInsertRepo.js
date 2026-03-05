@@ -16,11 +16,11 @@ export function buildChartKey({
     trackName = '',
     artistName = ''
 }) {
-  const externalId =
-    spotifyTrackId ??
-    lastfmMbid ??
-    `${(trackName ?? '').toLowerCase()}::${(artistName ?? '').toLowerCase()}`.replace(/\s+/g, '_')
-  return `${chartDate}:${country}:${chartType}:${source}:${rank}:${externalId}`
+    const fallback = `${(trackName ?? '').toLowerCase()}::${(artistName ?? '').toLowerCase()}`.replace(/\s+/g, '_')
+
+    const externalId = spotifyTrackId ?? lastfmMbid ?? fallback
+
+    return `${chartDate}:${country}:${chartType}:${source}:${rank}:${externalId}`
 }
 
 /**
