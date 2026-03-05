@@ -4,18 +4,18 @@
 	<meta charset="UTF-8" />
 	<title>AudioAtlas</title>
 	<style>@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Oleo+Script+Swash+Caps:wght@400;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&family=Shrikhand&display=swap');</style>
+	<style>@import url('https://fonts.googleapis.com/css2?family=Barrio&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=New+Amsterdam&family=Oleo+Script+Swash+Caps:wght@400;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&family=Shrikhand&display=swap');</style>
 </head>
 <body>
 	<h1>Audio Atlas</h1>
 
-	<button id="togglePlayer">Music Bar</button>
-
 	<div id="musicPlayer" class="player">
 		<div class="songInfo">
-			<strong>Title</strong>
-			<p>Artist</p>
-			<p>Album</p>
-			<p>Year</p>
+			<strong id="songName"></strong>
+			<p id="artistName"></p>
+			<p id="albumName"></p>
+			<p id="year"></p>
+			<audio id ="audioPlayer"></audio>
 		</div>
 
 		<div class="centerColumn">
@@ -27,11 +27,11 @@
 				<button>▶▶</button>
 			</div>
 			<div class="timeline">
-				<span class="currentTime">0:00</span>
-				<div class="barContainer">
-					<div class="timelineBar"></div>
+				<span class="currentTime" id="currentTime">0:00</span>
+				<div class="barContainer" id="barContainer">
+					<div class="timelineBar" id="timelineBar"></div>
 				</div>
-				<span class="fullTime">1:00</span>
+				<span class="fullTime" id="fullTime">0:30</span>
 			</div>
 		</div>
 
@@ -70,10 +70,18 @@
 		</form>
 	</div>
 
+	<div id="searchBar">
+  		<input type="text" id="countryInput" placeholder="Search for a country..." />
+  		<ul id="suggestions"></ul>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
 	<div id="topSongs" class="info">
 		<div class="header">
-			<h1>Country's Top Songs</h1>
+			<h1><span id="countryName">Country</span></h1>
 			<p>Week of:</p>
+			<button id="closeTopSongs" class="exit-button">x</button>
 		</div>
 
 		<div class="custom-dropdown">
@@ -93,6 +101,8 @@
 					<div class="song-info">
 						<span class="title">Song 1</span>
 						<span class="artist">Artist A</span>
+						<span class="album-name">Album A</span>
+						<span class="year">2024</span>
 					</div>
 				</li>
 				<li>
@@ -101,6 +111,8 @@
 					<div class="song-info">
 						<span class="title">Song 2</span>
 						<span class="artist">Artist B</span>
+						<span class="album-name">Album B</span>
+						<span class="year">2025</span>
 					</div>
 				</li>
 			</ul>

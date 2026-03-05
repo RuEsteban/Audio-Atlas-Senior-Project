@@ -10,13 +10,13 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    font-family: 'Oleo Script Swash Caps';
     overflow: hidden;
     margin: 0;
     z-index: 0;
 }
 
 h1 {
+    font-family: 'Oleo Script Swash Caps';
     position: absolute;
     top: 2vh;
     left: 50%;
@@ -96,6 +96,10 @@ p {
     margin-left: 1vh;
 }
 
+.header {
+    font-family: 'Roboto';
+}
+
 .songInfo p {
     text-align: left;
     color: black;
@@ -111,8 +115,8 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5vh;
-    width: 125vh;
+    width: 60vw;
+    max-width: 900px;
     pointer-events: none;
 }
 
@@ -156,14 +160,14 @@ p {
 
 .barContainer {
     flex-grow: 1;
-    height: 0.6vh;
+    height: 0.7vh;
     background: grey;
     border-radius: 3px;
     overflow: hidden;
 }
 
 .timelineBar {
-    width: 20%;
+    width: 0%;
     height: 100%;
     background: black;
     border-radius: 3px;
@@ -262,6 +266,7 @@ p {
 /* Top Songs Popup */
 .info {
     position: absolute;
+    display: inline-block;
     top: 10%;
     left: 2%;
     transform: translateX(-150%);
@@ -277,14 +282,13 @@ p {
     transition: transform 0.4s ease;
 }
 
-    .info.hidden {
+    .info.show {
         transform: translateX(0);
     }
 
     .info .header {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
         margin-bottom: 1rem;
         text-align: center;
     }
@@ -294,17 +298,36 @@ p {
             margin: 0;
             color: black;
             text-shadow: none;
+            font-family: 'Roboto';
+            white-space: normal;
+            word-break: break-word;
+            max-width: 100%;
+            position: static;
+            transform: none;
+            left: auto;
         }
 
         .info .header p {
             font-size: 1.2rem;
             color: gray;
             margin: 0;
-            margin-top: 12%;
+            margin-top: 6%;
             margin-bottom: 0px;
         }
 
+    .info .exit-button {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: black;
+    }
+
 .custom-dropdown {
+    font-family: "Roboto";
     width: 80%;
     margin: 0 auto 1.5rem auto;
     position: relative;
@@ -315,6 +338,7 @@ p {
 }
 
     .custom-dropdown .selected {
+        font-family: "Roboto";
         width: 100%;
         padding: 0.8rem 1rem;
         border-radius: 10px;
@@ -337,6 +361,7 @@ p {
         }
 
     .custom-dropdown .options {
+        font-family: "Roboto";
         position: absolute;
         top: 100%;
         left: 0;
@@ -367,6 +392,7 @@ p {
 
 
 .songList {
+    font-family: "Roboto";
     flex: 1;
     overflow-y: auto;
     border-top: 1px solid #eee;
@@ -374,7 +400,6 @@ p {
     background: white;
     margin-top: 0.5rem;
 }
-
     .songList ul {
         list-style: none;
         padding: 0;
@@ -411,8 +436,80 @@ p {
     justify-content: center;
 }
 
+.timeline {
+    font-family: 'Roboto';
+}
+
+.title {
+    font-weight: bold;
+}
+
 .selected-song {
     background-color: #d0ebff;
     border-left: 4px solid #339af0;
     border-radius: 5px;
+}
+
+#searchBar {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  width: min(90vw, 320px);
+}
+
+#countryInput {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid #00eaff;
+  outline: none;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+
+#countryInput::placeholder {
+  color: #aaa;
+}
+
+#suggestions {
+  margin-top: 4px;
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  color: white;
+
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid #00eaff;
+  border-radius: 6px;
+}
+
+#suggestions li {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+#suggestions li:hover {
+  background: #00eaff;
+  color: black;
+}
+
+/* 📱 Mobile tweak */
+@media (max-width: 600px) {
+  #searchBar {
+    width: 90vw;
+  }
+
+  #countryInput {
+    font-size: 0.9rem;
+  }
 }

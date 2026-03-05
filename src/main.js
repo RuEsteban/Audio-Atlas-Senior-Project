@@ -1,10 +1,27 @@
 import Globe from 'globe.gl'
 import './styles.css'
 import * as turf from '@turf/turf'
+import { Country } from "./Country.js"
 
 //import * as THREE from 'three'
 
 const globeContainer = document.getElementById('globe');
+
+// Country song data placeholder
+let currCountry = null;
+let topSongsArray =  null;
+
+
+// search bar
+let countryFeatures = [];
+let fuse;
+const input = document.getElementById("countryInput");
+const suggestions = document.getElementById("suggestions");
+
+const countryName = document.getElementById("countryName");
+const player = document.getElementById("musicPlayer");
+const optionContainer = document.getElementById("options");
+const topSongs = document.getElementById("topSongs");
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -26,6 +43,34 @@ globe.camera().position.z = 300;
 let hover = null;
 let select = null;
 
+function selectCountry(d) {
+  console.log(d.properties.name);
+
+  const [lng, lat] = d.properties.centroid;
+  globe.pointOfView({ lat, lng, altitude: 1 }, 1000);
+
+  fetch('https://audio-atlas-senior-project.onrender.com/api/test')
+    .then(response => response.json())
+    .then(data => {
+      console.log('API response:', data);
+      topSongsArray = data.topSongs;
+      populateSongList(topSongsArray);
+
+      currCountry = new Country(d.properties.name, topSongsArray);
+
+      if (countryName) {
+        countryName.textContent = currCountry.name;
+      }
+
+      player.classList.add("show");
+      optionContainer.classList.add("hidden");
+      topSongs.classList.add("show");
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+} // <-- close selectCountry here
+
 fetch('/custom.geo.json')
   .then(res => res.json())
   .then(data => {
@@ -34,6 +79,14 @@ fetch('/custom.geo.json')
       const centroid = turf.centroid(feature);
       feature.properties.centroid = centroid.geometry.coordinates;
       return feature;
+    });
+
+    countryFeatures = countries;
+
+    const countryNames = countries.map(c => c.properties.name);
+
+    fuse = new Fuse(countryNames, {
+      threshold: 0.3
     });
 
     globe
@@ -50,28 +103,16 @@ fetch('/custom.geo.json')
         );
       })
 
-      .onPolygonClick(d => {
-        console.log(d.properties);
-        
-        const [lng, lat] = d.properties.centroid;
-        globe.pointOfView(
-          { lat, lng, altitude: 1 }, // zoom altitude
-          1000 // how fast
-        );
-      });
+      .onPolygonClick(d => selectCountry(d));
   });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("togglePlayer");
-    const player = document.getElementById("musicPlayer");
-    const optionContainer = document.getElementById("options");
-    const topSongs = document.getElementById("topSongs");
-
-    // Toggle music player, options, and top songs popup
-    button.addEventListener("click", () => {
-        player.classList.toggle("show");
-        optionContainer.classList.toggle("hidden");
-        topSongs.classList.toggle("hidden");
+    // exit button for music player
+    const exitButton = document.getElementById("closeTopSongs");
+    exitButton.addEventListener("click", () => {
+        player.classList.remove("show");
+        optionContainer.classList.remove("hidden");
+        topSongs.classList.remove("show");
     });
 
     // Database selector
@@ -112,32 +153,152 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    // connect to audio
+    const audio = document.getElementById("audioPlayer");
+    const playButton = document.querySelector(".playButton button");
 
-    // Song selector
-    const songList = document.querySelector(".songList ul"); 
-    let selectedSong = null; 
+    const timelineBar = document.getElementById("timelineBar");
+    const barContainer = document.getElementById("barContainer");
 
-    if (songList) {
-        songList.querySelectorAll("li").forEach(songItem => {
-            songItem.addEventListener("click", () => {
-                songList.querySelectorAll("li").forEach(item => {
-                    item.classList.remove("selected-song");
-                });
+    const currentTime = document.getElementById("currentTime");
+    const fullTime = document.getElementById("fullTime");
 
-                songItem.classList.add("selected-song");
+    // play or pause button
+    playButton.addEventListener("click", () => {
+        if (audio.paused) {
+            audio.play();
+            playButton.textContent = "❚❚";
+        }
+        else {
+            audio.pause();
+            playButton.textContent = "▶";
+        }
+    });
 
-                const titleElem = songItem.querySelector(".song-info .title");
-                const artistElem = songItem.querySelector(".song-info .artist");
+    // update progress bar (out of 30 seconds)
+    audio.addEventListener("timeupdate", () => {
+      if (!audio.duration) {
+        return;
+      }
 
-                selectedSong = {
-                    number: songItem.querySelector(".song-number").textContent,
-                    title: titleElem ? titleElem.textContent : songItem.querySelector(".song-info").textContent,
-                    artist: artistElem ? artistElem.textContent : "",
-                    albumArt: songItem.querySelector("img").src
-                };
+      const percent = (audio.currentTime / audio.duration) * 100;
+      timelineBar.style.width = percent + "%";
+      currentTime.textContent = convertToMins(audio.currentTime);
+    });
 
-                console.log("Selected song:", selectedSong);
-            });
-        });
+    audio.addEventListener("loadedmetadata", () => {
+      fullTime.textContent = convertToMins(audio.duration);
+    });
+
+    audio.addEventListener("ended", () => {
+      playButton.textContent = "▶";
+      timelineBar.style.width = "0%";
+    });
+
+    async function testPreview() {
+    try {
+        // http get request sent, retrieves song data
+        let title = "DtMF";
+        let artist = "Bad Bunny";
+        let search = encodeURIComponent(`${title} ${artist}`);
+        let country = "us";
+
+        const res = await fetch(
+        `https://itunes.apple.com/search?term=${search}&entity=song&limit=1&country=${country}`
+        );
+
+        const data = await res.json();
+
+        if (!data.results[0].previewUrl) {
+            console.log("No preview");
+            return;
+        }
+
+        // extract URL
+        const previewUrl = data.results[0].previewUrl;
+        console.log("Audio Preview URL:", previewUrl);
+        audio.src = previewUrl;
+
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
     }
+
+    testPreview();
+});
+
+function convertToMins(time) {
+  const mins = Math.floor(time / 60);
+  let secs = Math.floor(time - mins * 60);
+
+  if (secs < 10) {
+    secs = secs.toString().padStart(2, "0");
+  }
+
+  return `${mins}:${secs}`;
+}
+
+function populateSongList(songs) {
+  const songList = document.querySelector("#songList ul");
+  songList.innerHTML = ""; // clear existing songs
+
+  songs.forEach(song => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <div class="song-number">${song.rank}</div>
+      <img src="/img/default-album.png" alt="Album" />
+      <div class="song-info">
+        <span class="title">${song.title}</span>
+        <span class="artist">${song.artist}</span>
+        <span class="album">${song.album}</span>
+        <span class="year">${song.year}</span>
+      </div>
+    `;
+
+    li.addEventListener("click", () => {
+      document.querySelectorAll("#songList li").forEach(item =>
+        item.classList.remove("selected-song")
+      );
+      li.classList.add("selected-song");
+
+      document.getElementById("songName").textContent = song.title;
+      document.getElementById("artistName").textContent = song.artist;
+
+      console.log("Selected song:", song);
+    });
+
+    songList.appendChild(li);
+  });
+}
+
+input.addEventListener("input", () => {
+  if (!fuse) return;
+
+  const value = input.value.trim();
+  suggestions.innerHTML = "";
+
+  if (!value) return;
+
+  const results = fuse.search(value);
+
+  results.slice(0, 5).forEach(result => {
+    const li = document.createElement("li");
+    li.textContent = result.item;
+
+    li.addEventListener("click", () => {
+      input.value = result.item;
+      suggestions.innerHTML = "";
+
+      const country = countryFeatures.find(
+        c => c.properties.name === result.item
+      );
+
+      if (country) {
+        selectCountry(country);
+      }
+    });
+
+    suggestions.appendChild(li);
+  });
 });
