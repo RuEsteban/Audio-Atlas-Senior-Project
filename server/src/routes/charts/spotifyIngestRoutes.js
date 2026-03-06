@@ -14,28 +14,11 @@ export default async function spotifyIngestRoutes(fastify) {
                 type: 'object',
                 required: ['country'],
                 properties: {
-                    country: {
-                        type: 'string',
-                        minLength: 2,
-                        maxLength: 2
-                    },
-                    limit: {
-                        type: 'integer',
-                        minimum: 1,
-                        maximum: 50
-                    },
-                    chartType: {
-                        type: 'string',
-                        default: 'top_tracks'
-                    },
-                    chartDate: {
-                        type: 'string',
-                        pattern: '^\\d{4}-\\d{2}-\\d{2}$'
-                    },
-                    timespan: {
-                        type: 'string',
-                        enum: ['daily', 'weekly']
-                    }
+                    country: { type: 'string', minLength: 2, maxLength: 2 },
+                    limit: { type: 'integer', minimum: 1, maximum: 50 },
+                    chartType: { type: 'string', default: 'top_tracks' },
+                    chartDate: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+                    timespan: { type: 'string', enum: ['daily', 'weekly'] }
                 }
             }
         }
@@ -47,7 +30,7 @@ export default async function spotifyIngestRoutes(fastify) {
         const limit = body.limit ?? 10
         const chartType = body.chartType ?? 'top_tracks'
         const chartDate = body.chartDate ?? null
-        const timespan = body.timespan ?? 'daily'
+        const timespan = body.timespan === 'daily' ? 'daily' : 'weekly'     // weekly is the default
 
         const result = await ingestSpotifyCountryTopTracks({
             supabase: fastify.supabase,
