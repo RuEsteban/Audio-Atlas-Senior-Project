@@ -68,7 +68,11 @@ function selectCountry(d) {
   console.log("Name:",d.properties.name);
   console.log("ISO Alpha-2:", d.properties.iso_a2);
 
-  selectedCountryISO = d.properties.iso_a2;
+  if(d.properties.iso_a2 === "-99") {
+    selectedCountryISO = "FR";
+  } else {
+    selectedCountryISO = d.properties.iso_a2;
+  }
 
   const [lng, lat] = d.properties.centroid;
   globe.pointOfView({ lat, lng, altitude: 1 }, 1000);
@@ -82,7 +86,6 @@ function selectCountry(d) {
   }
 
   player.classList.add("show");
-  optionContainer.classList.add("hidden");
   topSongs.classList.add("show");
   searchBar.classList.add("move");
 
@@ -128,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const exitButton = document.getElementById("closeTopSongs");
     exitButton.addEventListener("click", () => {
         player.classList.remove("show");
-        optionContainer.classList.remove("hidden");
         topSongs.classList.remove("show");
         searchBar.classList.remove("move");
     });
@@ -139,7 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
         radio.addEventListener('change', () => {
             selectedDatabase = radio.value;
             console.log("Selected database:", selectedDatabase);
-
+            if (selectedCountryISO) {
+              fetchTopSongs(selectedCountryISO);
+            }
         });
     });
 
@@ -285,12 +289,21 @@ function populateSongList(songs) {
   const songList = document.querySelector("#songList ul");
   songList.innerHTML = ""; // clear existing songs
 
+  if (!songs || songs.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No songs found for this country and week within this database.";
+    songList.appendChild(li);
+    return;
+  }
+
   songs.forEach((song, index) => {
     const li = document.createElement("li");
 
     li.innerHTML = `
       <div class="song-number">${truncateText(song.rank)}</div>
-      <img src="/img/default-album.png" alt="Album" />
+      <a href="${song.url}" target="_blank">
+        <img src="${song.album_art || '/img/default-album.png'}" alt="Album" />
+      </a>
       <div class="song-info">
         <span class="title">${truncateText(song.track_name)}</span>
         <span class="artist">${truncateText(song.artist_name)}</span>

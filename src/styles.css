@@ -10,7 +10,8 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    overflow: hidden;
+    overflow-x: visible;
+    overflow-y: hidden ;
     margin: 0;
     z-index: 0;
 }
@@ -131,6 +132,7 @@ p {
     width: 60vw;
     max-width: 900px;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .controls, .timeline {
@@ -220,7 +222,7 @@ p {
 #options {
     background-color: white;
     width: 10vw;
-    height: 22vh;
+    height: 25vh;
     position: absolute;
     top: 2vh;
     right: 2vh;
@@ -283,8 +285,8 @@ p {
     top: 10%;
     left: 2%;
     transform: translateX(-150%);
-    width: 20vw;
-    height: 60vh;
+    width: 22vw;
+    height: 70vh;
     background-color: white;
     border-radius: 15px;
     padding: 1.5rem;
@@ -350,7 +352,6 @@ p {
   transition: transform 0.2s ease;
 }
 
-/* Optional: little pop animation */
 #topSongs.show .exit-button {
   transform: scale(1.2);
 }
@@ -432,6 +433,8 @@ p {
     padding-top: 1rem;
     background: white;
     margin-top: 0.5rem;
+    overflow-x: visible;
+    position: relative;
 }
     .songList ul {
         list-style: none;
@@ -446,6 +449,9 @@ p {
         border-bottom: 1px solid #eee;
         font-size: 1rem;
         gap: 10px;
+        position: relative;
+        width: 85%;
+        margin: 0 auto;
     }
 
         .songList li img {
@@ -454,6 +460,25 @@ p {
             object-fit: cover;
             border-radius: 5px;
         }
+
+#songList li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  cursor: pointer;
+  position: relative;
+}
+
+#songList li:hover {
+  transform: scale(1.05); 
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); 
+  z-index: 10; 
+  position: relative;
+}
 
 .song-number {
     font-size: 2rem;
@@ -467,6 +492,20 @@ p {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.song-info img,
+#songList li img {
+  width: 60px;            
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  transition: transform 0.3s ease; 
+  cursor: pointer;
+}
+
+#songList li a:hover img {
+  transform: scale(1.2); 
 }
 
 .timeline {
