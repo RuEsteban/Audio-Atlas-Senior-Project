@@ -276,23 +276,36 @@ function fetchTopSongs(countryISO) {
     });
 }
 
+function truncateText(text) {
+  if (!text) return "";
+  return text.length > 30 ? text.slice(0, 30) + "…" : text;
+}
+
 function populateSongList(songs) {
   const songList = document.querySelector("#songList ul");
   songList.innerHTML = ""; // clear existing songs
 
-  songs.forEach(song => {
+  songs.forEach((song, index) => {
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <div class="song-number">${song.rank}</div>
+      <div class="song-number">${truncateText(song.rank)}</div>
       <img src="/img/default-album.png" alt="Album" />
       <div class="song-info">
-        <span class="title">${song.track_name}</span>
-        <span class="artist">${song.artist_name}</span>
-        <span class="album">${song.album_name}</span>
-        <span class="year">${song.release_year}</span>
+        <span class="title">${truncateText(song.track_name)}</span>
+        <span class="artist">${truncateText(song.artist_name)}</span>
+        <span class="album">${truncateText(song.album_name)} (${song.release_year})</span>
       </div>
     `;
+
+    if (index === 0) {
+      li.classList.add("selected-song");
+
+      document.getElementById("songName").textContent = truncateText(song.track_name);
+      document.getElementById("artistName").textContent = truncateText(song.artist_name);
+      document.getElementById("albumName").textContent =
+        `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+    }
 
     li.addEventListener("click", () => {
       document.querySelectorAll("#songList li").forEach(item =>
@@ -301,8 +314,10 @@ function populateSongList(songs) {
 
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = song.track_name;
-      document.getElementById("artistName").textContent = song.artist_name;
+      document.getElementById("songName").textContent = truncateText(song.track_name);
+      document.getElementById("artistName").textContent = truncateText(song.artist_name);
+      document.getElementById("albumName").textContent =
+        `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
 
       console.log("Selected song:", song);
     });
