@@ -30,6 +30,7 @@ let countryFeatures = [];
 let fuse;
 const input = document.getElementById("countryInput");
 const suggestions = document.getElementById("suggestions");
+const searchBar = document.getElementById("searchBar");
 
 const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
@@ -83,6 +84,8 @@ function selectCountry(d) {
   player.classList.add("show");
   optionContainer.classList.add("hidden");
   topSongs.classList.add("show");
+  searchBar.classList.add("move");
+
 }
 
 fetch('/custom.geo.json')
@@ -127,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         player.classList.remove("show");
         optionContainer.classList.remove("hidden");
         topSongs.classList.remove("show");
+        searchBar.classList.remove("move");
     });
 
     // Database selector
