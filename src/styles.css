@@ -475,7 +475,7 @@ p {
   padding: 8px 12px;
   font-size: 1rem;
   border-radius: 8px;
-  border: 2px solid #00eaff;
+  border: 2px solid #ffffff;
   outline: none;
   background: rgba(0, 0, 0, 0.75);
   color: white;
@@ -494,7 +494,7 @@ p {
   color: white;
 
   background: rgba(0, 0, 0, 0.85);
-  border: 1px solid #00eaff;
+  border: 0px solid #ffffff;
   border-radius: 6px;
 }
 
@@ -505,7 +505,7 @@ p {
 }
 
 #suggestions li:hover {
-  background: #00eaff;
+  background: #ffffff;
   color: black;
 }
 
