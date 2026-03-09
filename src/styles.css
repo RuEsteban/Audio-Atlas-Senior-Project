@@ -517,9 +517,12 @@ p {
 }
 
 .selected-song {
-    background-color: #d0ebff;
-    border-left: 4px solid #339af0;
-    border-radius: 5px;
+    background: linear-gradient(90deg, #4ba0e7 0%, #ffffff 100%);
+    border-left: 6px solid #177bd9;
+    border-radius: 10px;
+    transform: scale(1.05);
+    transition: all 0.5s ease;
+    z-index: 5;
 }
 
 #searchBar {
