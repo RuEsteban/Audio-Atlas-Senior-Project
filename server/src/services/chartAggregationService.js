@@ -621,5 +621,14 @@ export async function ingestSpotifyCountryTopTracks({
         limit
     })
 
-    return await upsertMusicCharts({ supabase, rows: validated })
+    const upsertResult = await upsertMusicCharts({ supabase, rows: validated })
+
+    return {
+        ...upsertResult,
+        source,
+        country: countryISO2,
+        requestedChartDate: chartDate,
+        effectiveChartDate,
+        timespan
+    }
 }

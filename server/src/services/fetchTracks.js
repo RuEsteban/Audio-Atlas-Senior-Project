@@ -31,6 +31,25 @@ function setCachedValue(key, value) {     // stores the query result in the cach
   })
 }
 
+export function clearChartCache() {       // use after bulk ingests to data freshness
+  chartCache.clear()
+}
+
+export function clearChartCacheKey(source, date, country) {    // use to clear one specific chart cache entry
+  const key = buildCacheKey(source, date, country)
+  chartCache.delete(key)
+}
+
+export function clearChartCacheByPrefix(source, date) {   // clear all cache entries for provider/date
+  const prefix = `${source}:${date}:`.toLowerCase()
+
+  for (const key of chartCache.keys()) {
+    if (key.startsWith(prefix)) {
+      chartCache.delete(key)
+    }
+  }
+}
+
 const fetchTopTracks = async (source, date, country) => {
   try {
     const cacheKey = buildCacheKey(source, date, country)
