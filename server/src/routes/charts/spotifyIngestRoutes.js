@@ -5,6 +5,7 @@
  */
 
 import { ingestSpotifyCountryTopTracks } from '../../services/chartAggregationService.js';
+import { clearChartCacheKey } from '../../services/fetchTracks.js';
 
 export default async function spotifyIngestRoutes(fastify) {
 
@@ -42,6 +43,11 @@ export default async function spotifyIngestRoutes(fastify) {
             timespan,
             ...(chartDate ? { chartDate } : {})
         })
+
+        // invalidate in-memory cache for this chart snapshot
+        if (result?.effectiveChartDate) {
+            clearChartCacheKey('spotify', result.effectiveChartDate, country)
+        }
 
         return reply.send({ ok: true, ...result })
     })
