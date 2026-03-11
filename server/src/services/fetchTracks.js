@@ -10,7 +10,11 @@ const fetchTopTracks = async (source, date, country) => {
       // each iteration is an element in array
       rank: track.rank,
       title: track.track_name,
-      artist: track.artist_name
+      artist: track.artist_name,
+      album: track.album_name,
+      release_year: track.release_year,
+      image_url: track.image_url || null,
+      external_url: track.external_url
     }))
   return {
     topSongs: rawData
