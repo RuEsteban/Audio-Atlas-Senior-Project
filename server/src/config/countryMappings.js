@@ -232,9 +232,19 @@ export const LASTFM_COUNTRY_NAME_BY_ISO2 = {
  *
  * Mapping derived from the Spotify market list
  * Runtime 404 handling to remain in place because page availability can vary.
+ * 
+ * Below countries successfully return KWORB daily chart pages
  */
+export const KWORB_SUPPORTED_ISO2 = [
+    'AE','AR','AT','AU','BE','BG','BO','BR','BY','CA','CH','CL','CO','CR','CZ',
+    'DE','DK','DO','EC','EE','EG','ES','FI','FR','GB','GR','GT','HK','HN','HU',
+    'ID','IE','IL','IN','IS','IT','JP','KR','KZ','LT','LU','LV','MA','MT','MX',
+    'MY','NG','NI','NL','NO','NZ','PA','PE','PH','PK','PL','PT','PY','RO','RU',
+    'SA','SE','SG','SK','SV','TH','TR','TW','UA','US','UY','VE','VN','ZA'
+]
+
 export const KWORB_COUNTRY_CODE_BY_ISO2 = Object.fromEntries(
-    ALL_ISO2_COUNTRIES.map((iso2) => [iso2, iso2.toLowerCase()])
+    KWORB_SUPPORTED_ISO2.map((iso2) => [iso2, iso2.toLowerCase()])
 )
 
 /**
@@ -283,5 +293,5 @@ export function getLastfmSupportedCountries() {
 }
 
 export function getKworbSupportedCountries() {
-    return ALL_ISO2_COUNTRIES.filter((iso2) => Boolean(COUNTRY_PROVIDER_SUPPORT[iso2]?.kworb))
+    return [...KWORB_SUPPORTED_ISO2]
 }

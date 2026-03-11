@@ -92,7 +92,7 @@ export async function ingestAllSpotifyWeeklyCharts({
                 chartDate,
                 limit,
                 chartType: 'top_tracks',
-                timespan: 'weekly'
+                timespan: 'daily'
             })
 
             return {

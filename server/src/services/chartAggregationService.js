@@ -527,6 +527,9 @@ export async function ingestSpotifyCountryTopTracks({
         limit
     })
 
+    // Use the actual provider date when KWORB shows one to keep DB truthful
+    const effectiveChartDate = kworb_chart_date ?? chartDate
+
     const enriched = await mapLimit(chart.slice(0, limit), 4, async (row) => {
         const trackName = row.trackName ?? null
         const artistName = row.artistName ?? null
@@ -567,7 +570,7 @@ export async function ingestSpotifyCountryTopTracks({
         const rank = e.rank
 
         const chart_key = buildChartKey({
-            chartDate,
+            chartDate: effectiveChartDate,
             country: countryISO2,
             chartType,
             source,
@@ -581,7 +584,7 @@ export async function ingestSpotifyCountryTopTracks({
         return {
             chart_key,
             source,
-            chart_date: chartDate,
+            chart_date: effectiveChartDate,
             country: countryISO2,
             chart_type: chartType,
             rank,
@@ -613,7 +616,7 @@ export async function ingestSpotifyCountryTopTracks({
     const validated = validateChartRows(rows, {
         source,
         country: countryISO2,
-        chartDate,
+        chartDate: effectiveChartDate,
         chartType,
         limit
     })

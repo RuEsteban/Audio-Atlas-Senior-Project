@@ -30,7 +30,9 @@ export default async function spotifyIngestRoutes(fastify) {
         const limit = body.limit ?? 10
         const chartType = body.chartType ?? 'top_tracks'
         const chartDate = body.chartDate ?? null
-        const timespan = body.timespan === 'daily' ? 'daily' : 'weekly'     // weekly is the default
+
+        // Daily is now the default option because KWORB weekly charts are too stale
+        const timespan = body.timespan === 'weekly' ? 'weekly' : 'daily'
 
         const result = await ingestSpotifyCountryTopTracks({
             supabase: fastify.supabase,
