@@ -1,6 +1,7 @@
 html, body {
     width: 100%;
     height: 100%;
+    font-family: 'DA Sans';
 }
 
 body {
@@ -53,7 +54,7 @@ p {
 .player {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 1.5vh;
     position: fixed;
@@ -89,11 +90,12 @@ p {
 }
 
 .songInfo {
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: 'DM Sans';
     flex: 1;
     min-width: 0;
     margin-right: 1vh;
     overflow: hidden;
+    width: 25%;
 }
 
 .songInfo strong{
@@ -110,7 +112,7 @@ p {
 }
 
 .header {
-    font-family: 'Roboto';
+    font-family: 'DM Sans';
 }
 
 .songInfo p {
@@ -122,12 +124,13 @@ p {
 }
 
 .centerColumn {
-    position: absolute;
+    flex: 0.8;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-40%);
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 60vw;
     max-width: 900px;
     pointer-events: none;
@@ -146,18 +149,28 @@ p {
     background: none;
     border: none;
     color: black;
-    font-size: 1.25rem;
+    font-size: 1.6rem;
     cursor: pointer;
+    padding: 10px;
 }
 
-.playButton button{
+.controls button:hover {
+    transform: scale(1.2);
+}
+
+#playButton {
     font-size: 2rem;
+    display: flex;
+}
+
+#backButton, #nextButton {
+    font-size: 1.5rem;
 }
 
 .timeline {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 1px;
     width: 100%;
     background: none;
     border-radius: 0.5vw;
@@ -173,6 +186,7 @@ p {
 
 .barContainer {
     flex-grow: 1;
+    width: 100%;
     height: 0.7vh;
     background: grey;
     border-radius: 3px;
@@ -191,15 +205,21 @@ p {
     align-items: flex-start;
     justify-content: space-between;
     color: black;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 1.2rem;
+    font-family: 'DM Sans';
     gap: 10vh;
 }
 
-.detailsLeft, .detailsRight {
+.detailsLeft {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+}
+
+.detailsRight {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 .detailsLeft {
@@ -219,12 +239,13 @@ p {
 
 #options {
     background-color: white;
-    width: 10vw;
-    height: 22vh;
+    font-family: "DM Sans";
+    width: 180px;
+    height: 24vh;
     position: absolute;
     top: 2vh;
     right: 2vh;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     border-radius: 1rem;
     z-index: 1000;
     padding: 1rem;
@@ -236,10 +257,29 @@ p {
     transform: translateX(120%);
 }
 
+.volume {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    gap: 8px;
+}
+
+.volume i {
+    font-size: 1rem;
+    color: black;
+}
+
+#volumeBar {
+  width: 120px;
+  cursor: pointer;
+  height: 5px;
+}
+
 #options p {
     color: black;
     margin: 0 0 1vh 0;
     text-decoration: underline;
+    font-size: 1.3rem;
 }
 
 .radio {
@@ -247,7 +287,7 @@ p {
     align-items: center;
     margin-bottom: 2vh;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .radio input[type="radio"] {
@@ -255,8 +295,8 @@ p {
 }
 
 .custom-radio {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.1rem;
+    height: 1.1rem;
     border: 3px solid black;
     border-radius: 50%;
     margin-right: 1rem;
@@ -280,11 +320,13 @@ p {
 .info {
     position: absolute;
     display: inline-block;
-    top: 10%;
+    top: 5%;
     left: 2%;
     transform: translateX(-150%);
-    width: 20vw;
-    height: 60vh;
+    width: 28vw;
+    min-width: 340px;
+    max-width: 500px;
+    height: 70vh;
     background-color: white;
     border-radius: 15px;
     padding: 1.5rem;
@@ -311,7 +353,7 @@ p {
             margin: 0;
             color: black;
             text-shadow: none;
-            font-family: 'Roboto';
+            font-family: 'DM Sans';
             white-space: normal;
             word-break: break-word;
             max-width: 100%;
@@ -324,7 +366,7 @@ p {
             font-size: 1.2rem;
             color: gray;
             margin: 0;
-            margin-top: 6%;
+            margin-top: 4%;
             margin-bottom: 0px;
         }
 
@@ -360,7 +402,7 @@ p {
 }
 
 .custom-dropdown {
-    font-family: "Roboto";
+    font-family: "DM Sans";
     width: 80%;
     margin: 0 auto 1.5rem auto;
     position: relative;
@@ -371,7 +413,7 @@ p {
 }
 
     .custom-dropdown .selected {
-        font-family: "Roboto";
+        font-family: "DM Sans";
         width: 100%;
         padding: 0.8rem 1rem;
         border-radius: 10px;
@@ -394,7 +436,7 @@ p {
         }
 
     .custom-dropdown .options {
-        font-family: "Roboto";
+        font-family: "DM Sans";
         position: absolute;
         top: 100%;
         left: 0;
@@ -425,7 +467,7 @@ p {
 
 
 .songList {
-    font-family: "Roboto";
+    font-family: "DM Sans";
     flex: 1;
     overflow-y: auto;
     border-top: 1px solid #eee;
@@ -440,11 +482,11 @@ p {
     }
 
     .songList li {
-        display: flex;
+        display: grid;
+        grid-template-columns: 40px 60px 1fr;
         align-items: center;
-        padding: 10px 0;
+        padding: 10px 5px;
         border-bottom: 1px solid #eee;
-        font-size: 1rem;
         gap: 10px;
     }
 
@@ -470,7 +512,7 @@ p {
 }
 
 .timeline {
-    font-family: 'Roboto';
+    font-family: 'DM Sans';
 }
 
 .title {
@@ -506,6 +548,7 @@ p {
 #countryInput {
   width: 100%;
   padding: 8px 12px;
+  font-family: 'DM Sans';
   font-size: 1rem;
   border-radius: 8px;
   border: 2px solid #ffffff;
@@ -525,6 +568,7 @@ p {
   max-height: 200px;
   overflow-y: auto;
   color: white;
+  font-family: 'DM Sans';
 
   background: rgba(0, 0, 0, 0.85);
   border: 0px solid #ffffff;
