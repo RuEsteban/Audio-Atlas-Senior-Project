@@ -39,6 +39,7 @@ const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
 const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
+let loadingElement;
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -71,8 +72,6 @@ function selectCountry(d) {
   playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
 
   // reset currsong index
-
-  selectedWeek = "2026-03-01";
 
   if (!selectedDatabase) {
     alert("Please select a database first.");
@@ -180,6 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
         topSongs.classList.remove("show");
         searchBar.classList.remove("move");
     });
+
+    loadingElement = document.getElementById("loading");
 
     // Database selector
     const radios = document.querySelectorAll('input[name="database"]');
@@ -340,10 +341,14 @@ function convertToMins(time) {
   return `${mins}:${secs}`;
 }
 
-function fetchTopSongs(countryISO) {
+async function fetchTopSongs(countryISO) {
+  displayLoading();
+
   console.log("Current Week: " + selectedWeek);
   let buildURL = `${fetchURL}/${selectedDatabase}/${selectedWeek}/${countryISO}/top-tracks`;
   console.log("Fetch URL:", buildURL);
+
+  
 
   fetch(buildURL)
     .then(response => response.json())
@@ -355,9 +360,11 @@ function fetchTopSongs(countryISO) {
       populateSongList(topSongsArray);
       currSong = 0;
       playSong(0);
+      hideLoading();
     })
     .catch(error => {
       console.error("Fetch error:", error);
+      hideLoading();
     });
 }
 
@@ -485,6 +492,20 @@ function getCurrentWeek() {
   const d = String(weekStart.getDate()).padStart(2, '0');
 
   return  `${y}-${m}-${d}`;
+}
+
+function displayLoading() {
+  loadingElement.classList.add("display");
+  const songList = document.getElementById("songList");
+  songList.classList.add("hidden");
+  console.log("Loading...");
+}
+
+function hideLoading() {
+  loadingElement.classList.remove("display");
+  const songList = document.getElementById("songList");
+  songList.classList.remove("hidden");
+  console.log("Loading complete.");
 }
 
 input.addEventListener("input", () => {
