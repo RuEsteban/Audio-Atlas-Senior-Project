@@ -435,8 +435,8 @@ function populateSongList(songs) {
 
     li.innerHTML = `
       <div class="song-number">${truncateText(song.rank)}</div>
-      <a href="${song.url}" target="_blank">
-        <img src="${song.album_art || '/img/default-album.png'}" alt="Album" />
+      <a href="${song.external_url}" target="_blank">
+        <img src="${song.image_url || '/img/default-album.png'}" alt="Album" />
       </a>
       <div class="song-info">
         <span class="title">${truncateText(song.track_name)}</span>
