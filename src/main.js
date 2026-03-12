@@ -337,23 +337,28 @@ async function audioPreview(title, artist) {
 }
 
 function getCurrentWeek() {
+    const start = new Date("2026-03-05");
     const today = new Date();
-    const day = today.getDay(); 
-    const diffToThursday = (5 - day + 7) % 7; 
-    today.setDate(today.getDate() + diffToThursday);
-    return today.toISOString().slice(0,10);
+    const diffInDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+
+    const weeksPassed = Math.floor(diffInDays / 7);
+    const currentWeek = new Date(start);
+    currentWeek.setDate(start.getDate() + weeksPassed * 7);
+
+    return currentWeek.toISOString().slice(0, 10);
 }
 
 function generateThursdayOptions(optionsList, numWeeks = 52) {
     optionsList.innerHTML = "";
-    const start = new Date(selectedWeek);
+
+    const start = new Date("2026-03-05");
 
     for (let i = 0; i < numWeeks; i++) {
         const d = new Date(start);
         d.setDate(start.getDate() + i * 7); 
 
-        const value = d.toISOString().slice(0,10);
-        const display = formatDateForDisplay(value); 
+        const value = d.toISOString().slice(0, 10);
+        const display = formatDateForDisplay(value);
 
         const li = document.createElement("li");
         li.setAttribute("data-value", value);
@@ -365,7 +370,8 @@ function generateThursdayOptions(optionsList, numWeeks = 52) {
 
 function formatDateForDisplay(dateStr) {
     const d = new Date(dateStr);
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    d.setDate(d.getDate() + 1);
+    const options = { year: 'numeric', month: 'short', day: 'numeric'};
     return d.toLocaleDateString(undefined, options);
 }
 
