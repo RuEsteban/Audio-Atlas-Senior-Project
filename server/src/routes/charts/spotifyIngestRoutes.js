@@ -5,6 +5,7 @@
  */
 
 import { ingestSpotifyCountryTopTracks } from '../../services/chartAggregationService.js';
+import { clearChartCacheKey } from '../../services/fetchTracks.js';
 
 export default async function spotifyIngestRoutes(fastify) {
 
@@ -14,28 +15,11 @@ export default async function spotifyIngestRoutes(fastify) {
                 type: 'object',
                 required: ['country'],
                 properties: {
-                    country: {
-                        type: 'string',
-                        minLength: 2,
-                        maxLength: 2
-                    },
-                    limit: {
-                        type: 'integer',
-                        minimum: 1,
-                        maximum: 50
-                    },
-                    chartType: {
-                        type: 'string',
-                        default: 'top_tracks'
-                    },
-                    chartDate: {
-                        type: 'string',
-                        pattern: '^\\d{4}-\\d{2}-\\d{2}$'
-                    },
-                    timespan: {
-                        type: 'string',
-                        enum: ['daily', 'weekly']
-                    }
+                    country: { type: 'string', minLength: 2, maxLength: 2 },
+                    limit: { type: 'integer', minimum: 1, maximum: 50 },
+                    chartType: { type: 'string', default: 'top_tracks' },
+                    chartDate: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+                    timespan: { type: 'string', enum: ['daily', 'weekly'] }
                 }
             }
         }
@@ -47,7 +31,9 @@ export default async function spotifyIngestRoutes(fastify) {
         const limit = body.limit ?? 10
         const chartType = body.chartType ?? 'top_tracks'
         const chartDate = body.chartDate ?? null
-        const timespan = body.timespan ?? 'daily'
+
+        // Daily is now the default option because KWORB weekly charts are too stale
+        const timespan = body.timespan === 'weekly' ? 'weekly' : 'daily'
 
         const result = await ingestSpotifyCountryTopTracks({
             supabase: fastify.supabase,
@@ -57,6 +43,11 @@ export default async function spotifyIngestRoutes(fastify) {
             timespan,
             ...(chartDate ? { chartDate } : {})
         })
+
+        // invalidate in-memory cache for this chart snapshot
+        if (result?.effectiveChartDate) {
+            clearChartCacheKey('spotify', result.effectiveChartDate, country)
+        }
 
         return reply.send({ ok: true, ...result })
     })
