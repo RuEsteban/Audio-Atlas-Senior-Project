@@ -337,7 +337,7 @@ async function audioPreview(title, artist) {
 }
 
 function getCurrentWeek() {
-    const start = new Date("2026-03-05");
+    const start = new Date("2026-02-26");
     const today = new Date();
     const diffInDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
 
@@ -351,7 +351,7 @@ function getCurrentWeek() {
 function generateThursdayOptions(optionsList, numWeeks = 52) {
     optionsList.innerHTML = "";
 
-    const start = new Date("2026-03-05");
+    const start = new Date("2026-02-26");
 
     for (let i = 0; i < numWeeks; i++) {
         const d = new Date(start);
