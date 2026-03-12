@@ -199,6 +199,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dropdown) {
         const selected = dropdown.querySelector(".selected");
         const optionsList = dropdown.querySelector(".options");
+
+        // Clear old options and generate Thursdays
+        optionsList.innerHTML = "";
+        generateThursdayOptions(optionsList);
+
+        // Set displayed selected week
         const currentOption = optionsList.querySelector(`li[data-value="${selectedWeek}"]`);
         if (currentOption) {
             selected.textContent = currentOption.textContent;
@@ -328,7 +334,25 @@ async function audioPreview(title, artist) {
       } catch (error) {
           console.error("Fetch error:", error);
       }
-  }
+}
+
+function generateThursdayOptions(optionsList, numWeeks = 52) {
+    optionsList.innerHTML = "";
+    const start = new Date(selectedWeek);
+
+    for (let i = 0; i < numWeeks; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i * 7);
+
+        const value = d.toISOString().slice(0,10);
+
+        const li = document.createElement("li");
+        li.setAttribute("data-value", value);
+        li.textContent = value;
+
+        optionsList.appendChild(li);
+    }
+}
 
 function convertToMins(time) {
   const mins = Math.floor(time / 60);
@@ -486,20 +510,9 @@ function populateSongList(songs) {
 }
 
 function getCurrentWeek() {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const day = today.getDate();
-
-  const week = Math.floor((day - 1) / 7);
-  const weekStart = new Date(year, month, 1 + week * 7);
-
-  const y = weekStart.getFullYear();
-  const m = String(weekStart.getMonth() + 1).padStart(2, '0');
-  const d = String(weekStart.getDate()).padStart(2, '0');
-
-  return  `${y}-${m}-${d}`;
+  const d = new Date();
+  d.setDate(d.getDate() - ((d.getDay() - 4 + 7) % 7));
+  return d.toISOString().slice(0, 10);
 }
 
 function displayLoading() {
