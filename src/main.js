@@ -199,6 +199,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dropdown) {
         const selected = dropdown.querySelector(".selected");
         const optionsList = dropdown.querySelector(".options");
+
+        // Clear old options and generate Thursdays
+        optionsList.innerHTML = "";
+        generateThursdayOptions(optionsList);
+
+        // Set displayed selected week
         const currentOption = optionsList.querySelector(`li[data-value="${selectedWeek}"]`);
         if (currentOption) {
             selected.textContent = currentOption.textContent;
@@ -328,7 +334,47 @@ async function audioPreview(title, artist) {
       } catch (error) {
           console.error("Fetch error:", error);
       }
-  }
+}
+
+function getCurrentWeek() {
+    const start = new Date("2026-02-26");
+    const today = new Date();
+    const diffInDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+
+    const weeksPassed = Math.floor(diffInDays / 7);
+    const currentWeek = new Date(start);
+    currentWeek.setDate(start.getDate() + weeksPassed * 7);
+
+    return currentWeek.toISOString().slice(0, 10);
+}
+
+function generateThursdayOptions(optionsList, numWeeks = 52) {
+    optionsList.innerHTML = "";
+
+    const start = new Date("2026-02-26");
+
+    for (let i = 0; i < numWeeks; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i * 7); 
+
+        const value = d.toISOString().slice(0, 10);
+        const display = formatDateForDisplay(value);
+
+        const li = document.createElement("li");
+        li.setAttribute("data-value", value);
+        li.textContent = display;
+
+        optionsList.appendChild(li);
+    }
+}
+
+function formatDateForDisplay(dateStr) {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + 1);
+    const options = { year: 'numeric', month: 'short', day: 'numeric'};
+    return d.toLocaleDateString(undefined, options);
+}
+
 
 function convertToMins(time) {
   const mins = Math.floor(time / 60);
@@ -483,23 +529,6 @@ function populateSongList(songs) {
 
     songList.appendChild(li);
   });
-}
-
-function getCurrentWeek() {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const day = today.getDate();
-
-  const week = Math.floor((day - 1) / 7);
-  const weekStart = new Date(year, month, 1 + week * 7);
-
-  const y = weekStart.getFullYear();
-  const m = String(weekStart.getMonth() + 1).padStart(2, '0');
-  const d = String(weekStart.getDate()).padStart(2, '0');
-
-  return  `${y}-${m}-${d}`;
 }
 
 function displayLoading() {
