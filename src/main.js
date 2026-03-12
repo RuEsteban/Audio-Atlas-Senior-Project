@@ -382,10 +382,10 @@ function playSong(index) {
 
   currSong = index;
 
-  document.getElementById("songName").textContent = truncateText(song.track_name);
-  document.getElementById("artistName").textContent = truncateText(song.artist_name);
+  document.getElementById("songName").textContent = truncateText(song.track_name || "Unknown");
+  document.getElementById("artistName").textContent = truncateText(song.artist_name || "Unknown");
   document.getElementById("albumName").textContent = 
-  `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+  `${truncateText(song.album_name || "Unknown")} (${truncateText(song.release_year || "Unknown")})`;
 
   document.querySelectorAll("#songList li").forEach(item =>
     item.classList.remove("selected-song")
@@ -433,15 +433,23 @@ function populateSongList(songs) {
   songs.forEach((song, index) => {
     const li = document.createElement("li");
 
+    let ext_url = song.external_url || "#";
+    let img_url = song.image_url || '/img/default-album.png';
+    let rank = song.rank || "-";
+    let track_name = song.track_name || "Unknown";
+    let artist_name = song.artist_name || "Unknown";
+    let album_name = song.album_name || "Unknown";
+    let release_year = song.release_year || "Unknown";
+
     li.innerHTML = `
-      <div class="song-number">${truncateText(song.rank)}</div>
-      <a href="${song.external_url}" target="_blank">
-        <img src="${song.image_url || '/img/default-album.png'}" alt="Album" />
+      <div class="song-number">${truncateText(rank)}</div>
+      <a href="${ext_url}" target="_blank">
+        <img src="${img_url}" alt="Album" />
       </a>
       <div class="song-info">
-        <span class="title">${truncateText(song.track_name)}</span>
-        <span class="artist">${truncateText(song.artist_name)}</span>
-        <span class="album">${truncateText(song.album_name)} (${song.release_year})</span>
+        <span class="title">${truncateText(track_name)}</span>
+        <span class="artist">${truncateText(artist_name)}</span>
+        <span class="album">${truncateText(album_name)} (${truncateText(release_year)})</span>
       </div>
     `;
 
@@ -463,10 +471,10 @@ function populateSongList(songs) {
 
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = truncateText(song.track_name);
-      document.getElementById("artistName").textContent = truncateText(song.artist_name);
+      document.getElementById("songName").textContent = truncateText(track_name);
+      document.getElementById("artistName").textContent = truncateText(artist_name);
       document.getElementById("albumName").textContent =
-        `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+        `${truncateText(album_name)} (${truncateText(release_year)})`;
 
       audioPreview(song.track_name, song.artist_name);
 
