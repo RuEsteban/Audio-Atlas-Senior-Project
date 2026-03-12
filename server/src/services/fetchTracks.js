@@ -76,7 +76,7 @@ const fetchTopTracks = async (source, date, country) => {
       }))
     */
     const response = {
-      topSongs: rawDate
+      topSongs: rawData
     }
 
     setCachedValue(cacheKey, response)    // store in short lived cache for repeated UI clicks
