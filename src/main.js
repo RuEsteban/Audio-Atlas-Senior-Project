@@ -2,6 +2,7 @@ import Globe from 'globe.gl'
 import './styles.css'
 import * as turf from '@turf/turf'
 import { Country } from "./Country.js"
+import { next } from '@vercel/edge';
 //import { build } from 'vite';
 
 //import * as THREE from 'three'
@@ -11,6 +12,7 @@ const globeContainer = document.getElementById('globe');
 // Country song data placeholder
 let currCountry = null;
 let topSongsArray =  null;
+let currSong = 0;
 
 //string to build fetch url
 // example: https://audio-atlas-senior-project.onrender.com/api/lastfm/2026-03-01/US/top-tracks
@@ -37,6 +39,7 @@ const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
 const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
+let loadingElement;
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -56,9 +59,20 @@ globe.controls().autoRotateSpeed = 0.6;
 globe.camera().position.z = 300;
 
 let hover = null;
-let select = null;
+let highlightedCountry = null;
+const disabledCountries = ["BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
 
 function selectCountry(d) {
+  const audio = document.getElementById("audioPlayer");
+  audio.pause();
+  audio.currentTime = 0;
+  currSong = 0;
+
+  document.getElementById("timelineBar").style.width = "0%";
+  playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+
+  // reset currsong index
+
   if (!selectedDatabase) {
     alert("Please select a database first.");
     return;
@@ -88,6 +102,16 @@ function selectCountry(d) {
   topSongs.classList.add("show");
   searchBar.classList.add("move");
 
+  highlightedCountry = d.properties.iso_a2;
+  globe.polygonCapColor(p => {
+    if (disabledCountries.includes(p.properties.iso_a2)) {
+      return 'rgba(128,128,128,0.6)';
+    }
+    if (p.properties.iso_a2 === highlightedCountry) {
+      return'rgba(0,255,255,0.4)';
+    }
+    return 'rgba(0,0,0,0)';
+  });
 }
 
 fetch('/custom.geo.json')
@@ -111,19 +135,41 @@ fetch('/custom.geo.json')
     globe
       .polygonsData(countries)
       .polygonSideColor(() => 'rgba(0,0,0,0)')
-      //.polygonAltitude(0.01)
-      //.polygonAltitude(d => d === hover ? 0.03 : 0.01)
       .polygonStrokeColor(() => '#00eaff')
-      .polygonCapColor(() => 'rgba(0,0,0,0)')
+      .polygonCapColor(d => {
+        if (disabledCountries.includes(d.properties.iso_a2)) {
+          return 'rgba(128,128,128,0.6)';
+        }
+        if (d.properties.iso_a2 === highlightedCountry) {
+          return 'rgba(255,204,128,0.7)';
+        }
+        return 'rgba(0,0,0,0)';
+      })
       .onPolygonHover(p => {
         hover = p;
-        globe.polygonCapColor(poly =>
-          poly === hover ? 'rgba(0,255,255,0.4)' : 'rgba(0,0,0,0)'
-        );
-      })
-
-      .onPolygonClick(d => selectCountry(d));
+        globe.polygonCapColor(d => {
+          if (disabledCountries.includes(d.properties.iso_a2)){
+            return 'rgba(128,128,128,0.6)';
+          }
+          if (d.properties.iso_a2 === highlightedCountry) {
+            return 'rgba(0,255,255,0.4)';
+          }
+          return d === hover ? 'rgba(0,255,255,0.4)' : 'rgba(0,0,0,0)';
+      });
+    })
+    .onPolygonClick(d => {
+      if (disabledCountries.includes(d.properties.iso_a2)) {
+        return;
+      }
+      selectCountry(d);
+    });
   });
+
+
+window.addEventListener('resize', () => {
+  globe.width([window.innerWidth]);
+  globe.height([window.innerHeight]);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
@@ -133,6 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
         topSongs.classList.remove("show");
         searchBar.classList.remove("move");
     });
+
+    loadingElement = document.getElementById("loading");
 
     // Database selector
     const radios = document.querySelectorAll('input[name="database"]');
@@ -181,25 +229,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // connect to audio
     const audio = document.getElementById("audioPlayer");
-    const playButton = document.querySelector(".playButton button");
+    const playButton = document.getElementById("playButton");
+    const backButton = document.getElementById("backButton");
+    const nextButton = document.getElementById("nextButton");
+    const volumeBar = document.getElementById("volumeBar");
+    audio.volume = 0.2;
+    volumeBar.value = 0.2;
 
     const timelineBar = document.getElementById("timelineBar");
-    const barContainer = document.getElementById("barContainer");
 
     const currentTime = document.getElementById("currentTime");
     const fullTime = document.getElementById("fullTime");
+    const barContainer = document.getElementById("barContainer");
+
+    volumeBar.addEventListener("input", () => {
+      audio.volume = volumeBar.value;
+    });
 
     // play or pause button
     playButton.addEventListener("click", () => {
         if (audio.paused) {
             audio.play();
-            playButton.textContent = "❚❚";
+            playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
         }
         else {
             audio.pause();
-            playButton.textContent = "▶";
+            playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
     });
+
+    nextButton.addEventListener("click", nextSong);
+    backButton.addEventListener("click", prevSong);
 
     // update progress bar (out of 30 seconds)
     audio.addEventListener("timeupdate", () => {
@@ -217,41 +277,58 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("ended", () => {
-      playButton.textContent = "▶";
+      playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
       timelineBar.style.width = "0%";
     });
 
-    async function testPreview() {
-    try {
-        // http get request sent, retrieves song data
-        let title = "DtMF";
-        let artist = "Bad Bunny";
-        let search = encodeURIComponent(`${title} ${artist}`);
-        let country = "us";
+    barContainer.addEventListener("click", (e) => {
+      const rect = barContainer.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
 
-        const res = await fetch(
-        `https://itunes.apple.com/search?term=${search}&entity=song&limit=1&country=${country}`
-        );
-
-        const data = await res.json();
-
-        if (!data.results[0].previewUrl) {
-            console.log("No preview");
-            return;
-        }
-
-        // extract URL
-        const previewUrl = data.results[0].previewUrl;
-        console.log("Audio Preview URL:", previewUrl);
-        audio.src = previewUrl;
-
-        } catch (error) {
-            console.error("Fetch error:", error);
-        }
-    }
-
-    testPreview();
+      audio.currentTime = percent * audio.duration;
+    });
 });
+
+const usedAudios = new Map();
+
+async function audioPreview(title, artist) {
+  try {
+      // http get request sent, retrieves song data
+      const search = encodeURIComponent(`${title} ${artist}`);
+      const audio = document.getElementById("audioPlayer");
+      let country = "us";
+
+      if (usedAudios.has(search)) {
+        audio.src = usedAudios.get(search);
+        audio.currentTime = 0;
+        audio.play();
+        return;
+      }
+
+      const res = await fetch(
+      `https://itunes.apple.com/search?term=${search}&entity=song&limit=1&country=${country}`
+      );
+
+      const data = await res.json();
+
+      if (!data.results.length || !data.results[0].previewUrl) {
+          console.log("No preview");
+          return;
+      }
+
+      // extract URL
+      const previewUrl = data.results[0].previewUrl;
+      usedAudios.set(search, previewUrl);
+      audio.src = previewUrl;
+      audio.currentTime = 0;
+      audio.play();
+
+      playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+      } catch (error) {
+          console.error("Fetch error:", error);
+      }
+  }
 
 function convertToMins(time) {
   const mins = Math.floor(time / 60);
@@ -264,10 +341,14 @@ function convertToMins(time) {
   return `${mins}:${secs}`;
 }
 
-function fetchTopSongs(countryISO) {
+async function fetchTopSongs(countryISO) {
+  displayLoading();
+
   console.log("Current Week: " + selectedWeek);
   let buildURL = `${fetchURL}/${selectedDatabase}/${selectedWeek}/${countryISO}/top-tracks`;
   console.log("Fetch URL:", buildURL);
+
+  
 
   fetch(buildURL)
     .then(response => response.json())
@@ -275,16 +356,67 @@ function fetchTopSongs(countryISO) {
       console.log("API response:", data);
 
       topSongsArray = data.topSongs;
+
       populateSongList(topSongsArray);
+      currSong = 0;
+      playSong(0);
+      hideLoading();
     })
     .catch(error => {
       console.error("Fetch error:", error);
+      hideLoading();
     });
 }
 
 function truncateText(text) {
   if (!text) return "";
   return text.length > 30 ? text.slice(0, 30) + "…" : text;
+}
+
+function playSong(index) {
+  if (!topSongsArray) {
+    return;
+  }
+
+  const song = topSongsArray[index];
+
+  currSong = index;
+
+  document.getElementById("songName").textContent = truncateText(song.track_name);
+  document.getElementById("artistName").textContent = truncateText(song.artist_name);
+  document.getElementById("albumName").textContent = 
+  `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+
+  document.querySelectorAll("#songList li").forEach(item =>
+    item.classList.remove("selected-song")
+  );
+
+  const items = document.querySelectorAll("#songList li");
+  if (items[index]) {
+    items[index].classList.add("selected-song");
+  }
+
+  audioPreview(song.track_name, song.artist_name);
+
+  playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+}
+
+function nextSong() {
+  if (!topSongsArray) {
+    return;
+  }
+
+  currSong = (currSong + 1)  % topSongsArray.length;
+  playSong(currSong);
+}
+
+function prevSong() {
+  if (!topSongsArray) {
+    return;
+  }
+
+  currSong = (currSong - 1 + topSongsArray.length)  % topSongsArray.length;
+  playSong(currSong);
 }
 
 function populateSongList(songs) {
@@ -327,12 +459,16 @@ function populateSongList(songs) {
         item.classList.remove("selected-song")
       );
 
+      currSong = index;
+
       li.classList.add("selected-song");
 
       document.getElementById("songName").textContent = truncateText(song.track_name);
       document.getElementById("artistName").textContent = truncateText(song.artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+
+      audioPreview(song.track_name, song.artist_name);
 
       console.log("Selected song:", song);
     });
@@ -358,6 +494,20 @@ function getCurrentWeek() {
   return  `${y}-${m}-${d}`;
 }
 
+function displayLoading() {
+  loadingElement.classList.add("display");
+  const songList = document.getElementById("songList");
+  songList.classList.add("hidden");
+  console.log("Loading...");
+}
+
+function hideLoading() {
+  loadingElement.classList.remove("display");
+  const songList = document.getElementById("songList");
+  songList.classList.remove("hidden");
+  console.log("Loading complete.");
+}
+
 input.addEventListener("input", () => {
   if (!fuse) return;
 
@@ -379,6 +529,10 @@ input.addEventListener("input", () => {
       const country = countryFeatures.find(
         c => c.properties.name === result.item
       );
+
+      if (country && disabledCountries.includes(country.properties.iso_a2)) {
+        return;
+      }
 
       if (country) {
         selectCountry(country);
