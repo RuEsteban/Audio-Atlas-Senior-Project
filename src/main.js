@@ -20,7 +20,8 @@ let fetchURL = "https://audio-atlas-senior-project.onrender.com/api";
 let selectedDatabase = "lastfm";
 
 // week string, default current week  
-let selectedWeek = "2026-03-01";
+let selectedWeek = getCurrentWeek();
+console.log("Current week:", selectedWeek);
 
 // selected country ISO
 let selectedCountryISO = null;
@@ -58,8 +59,6 @@ let hover = null;
 let select = null;
 
 function selectCountry(d) {
-  selectedWeek = "2026-03-01";
-
   if (!selectedDatabase) {
     alert("Please select a database first.");
     return;
@@ -152,7 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dropdown) {
         const selected = dropdown.querySelector(".selected");
         const optionsList = dropdown.querySelector(".options");
-        selectedWeek = selected.textContent;
+        const currentOption = optionsList.querySelector(`li[data-value="${selectedWeek}"]`);
+        if (currentOption) {
+            selected.textContent = currentOption.textContent;
+        }
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
@@ -263,7 +265,7 @@ function convertToMins(time) {
 }
 
 function fetchTopSongs(countryISO) {
-
+  console.log("Current Week: " + selectedWeek);
   let buildURL = `${fetchURL}/${selectedDatabase}/${selectedWeek}/${countryISO}/top-tracks`;
   console.log("Fetch URL:", buildURL);
 
@@ -337,6 +339,23 @@ function populateSongList(songs) {
 
     songList.appendChild(li);
   });
+}
+
+function getCurrentWeek() {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const day = today.getDate();
+
+  const week = Math.floor((day - 1) / 7);
+  const weekStart = new Date(year, month, 1 + week * 7);
+
+  const y = weekStart.getFullYear();
+  const m = String(weekStart.getMonth() + 1).padStart(2, '0');
+  const d = String(weekStart.getDate()).padStart(2, '0');
+
+  return  `${y}-${m}-${d}`;
 }
 
 input.addEventListener("input", () => {
