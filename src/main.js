@@ -336,23 +336,39 @@ async function audioPreview(title, artist) {
       }
 }
 
+function getCurrentWeek() {
+    const today = new Date();
+    const day = today.getDay(); 
+    const diffToThursday = (5 - day + 7) % 7; 
+    today.setDate(today.getDate() + diffToThursday);
+    return today.toISOString().slice(0,10);
+}
+
 function generateThursdayOptions(optionsList, numWeeks = 52) {
     optionsList.innerHTML = "";
     const start = new Date(selectedWeek);
 
     for (let i = 0; i < numWeeks; i++) {
         const d = new Date(start);
-        d.setDate(start.getDate() + i * 7);
+        d.setDate(start.getDate() + i * 7); 
 
         const value = d.toISOString().slice(0,10);
+        const display = formatDateForDisplay(value); 
 
         const li = document.createElement("li");
         li.setAttribute("data-value", value);
-        li.textContent = value;
+        li.textContent = display;
 
         optionsList.appendChild(li);
     }
 }
+
+function formatDateForDisplay(dateStr) {
+    const d = new Date(dateStr);
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return d.toLocaleDateString(undefined, options);
+}
+
 
 function convertToMins(time) {
   const mins = Math.floor(time / 60);
@@ -507,12 +523,6 @@ function populateSongList(songs) {
 
     songList.appendChild(li);
   });
-}
-
-function getCurrentWeek() {
-  const d = new Date();
-  d.setDate(d.getDate() - ((d.getDay() - 4 + 7) % 7));
-  return d.toISOString().slice(0, 10);
 }
 
 function displayLoading() {
