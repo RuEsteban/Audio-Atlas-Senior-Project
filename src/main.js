@@ -159,8 +159,12 @@ fetch('/custom.geo.json')
     })
     .onPolygonClick(d => {
       if (disabledCountries.includes(d.properties.iso_a2)) {
+        const name = d.properties.name;
+        alert(`No music available for ${d.properties.name}`);
+
         return;
       }
+
       selectCountry(d);
     });
   });
@@ -175,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
     const exitButton = document.getElementById("closeTopSongs");
     exitButton.addEventListener("click", () => {
+        audio.pause();
         player.classList.remove("show");
         topSongs.classList.remove("show");
         searchBar.classList.remove("move");
@@ -239,8 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.getElementById("backButton");
     const nextButton = document.getElementById("nextButton");
     const volumeBar = document.getElementById("volumeBar");
-    audio.volume = 0.2;
-    volumeBar.value = 0.2;
+    audio.volume = 0.1;
+    volumeBar.value = 0.1;
 
     const timelineBar = document.getElementById("timelineBar");
 
@@ -276,6 +281,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const percent = (audio.currentTime / audio.duration) * 100;
       timelineBar.style.width = percent + "%";
       currentTime.textContent = convertToMins(audio.currentTime);
+
+      const timeLeft = audio.duration - audio.currentTime;
+      fullTime.textContent = "-" + convertToMins(timeLeft);
     });
 
     audio.addEventListener("loadedmetadata", () => {
@@ -283,8 +291,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("ended", () => {
+      audio.currentTime = 0;
       playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
       timelineBar.style.width = "0%";
+      currentTime.textContent = "0:00";
     });
 
     barContainer.addEventListener("click", (e) => {

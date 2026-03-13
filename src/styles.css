@@ -243,7 +243,7 @@ p {
     background-color: white;
     font-family: "DM Sans";
     width: 180px;
-    height: 24vh;
+    height: 27vh;
     position: absolute;
     top: 2vh;
     right: 2vh;
@@ -574,7 +574,7 @@ p {
 #searchBar {
   position: absolute;
   left: 50%;
-  bottom: 10px;
+  bottom: 50px;
   transform: translateX(-50%);
   z-index: 10;
   transition: transform 0.4s ease;
@@ -587,7 +587,7 @@ p {
 }
 
 #searchBar.move {
-    transform: translate(-50%, -125%);
+    transform: translate(-50%, -155%);
     transition: transform 0.4s ease;
 }
 
@@ -608,13 +608,17 @@ p {
 }
 
 #suggestions {
-  margin-top: 4px;
+  bottom: 100%;
+  margin-bottom: 6px;
+  left: 0;
+  width: 100%;
   list-style: none;
   padding: 0;
   max-height: 200px;
   overflow-y: auto;
   color: white;
   font-family: 'DM Sans';
+  position: absolute;
 
   background: rgba(0, 0, 0, 0.85);
   border: 0px solid #ffffff;
