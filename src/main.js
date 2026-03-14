@@ -210,10 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
         generateThursdayOptions(optionsList);
 
         // Set displayed selected week
-        const currentOption = optionsList.querySelector(`li[data-value="${selectedWeek}"]`);
-        if (currentOption) {
-            selected.textContent = currentOption.textContent;
-        }
+        const [year, month, day] = selectedWeek.split("-").map(Number);
+        selected.textContent = formatDateForDisplay(new Date(year, month - 1, day));
+
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
@@ -347,28 +346,30 @@ async function audioPreview(title, artist) {
 }
 
 function getCurrentWeek() {
-    const start = new Date("2026-02-26");
+    const start = new Date(2026, 1, 26);
     const today = new Date();
-    const diffInDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
 
+    const diffInDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
     const weeksPassed = Math.floor(diffInDays / 7);
+
     const currentWeek = new Date(start);
     currentWeek.setDate(start.getDate() + weeksPassed * 7);
 
-    return currentWeek.toISOString().slice(0, 10);
+    return formatDateForValue(currentWeek);
 }
+
 
 function generateThursdayOptions(optionsList, numWeeks = 52) {
     optionsList.innerHTML = "";
 
-    const start = new Date("2026-02-26");
+    const start = new Date(2026, 1, 26);
 
     for (let i = 0; i < numWeeks; i++) {
         const d = new Date(start);
-        d.setDate(start.getDate() + i * 7); 
+        d.setDate(start.getDate() + i * 7);
 
-        const value = d.toISOString().slice(0, 10);
-        const display = formatDateForDisplay(value);
+        const value = formatDateForValue(d);
+        const display = formatDateForDisplay(d);
 
         const li = document.createElement("li");
         li.setAttribute("data-value", value);
@@ -378,12 +379,18 @@ function generateThursdayOptions(optionsList, numWeeks = 52) {
     }
 }
 
-function formatDateForDisplay(dateStr) {
-    const d = new Date(dateStr);
-    d.setDate(d.getDate() + 1);
-    const options = { year: 'numeric', month: 'short', day: 'numeric'};
-    return d.toLocaleDateString(undefined, options);
+function formatDateForValue(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
+
+function formatDateForDisplay(date) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric'};
+    return date.toLocaleDateString(undefined, options);
+}
+
 
 
 function convertToMins(time) {
@@ -499,7 +506,7 @@ function populateSongList(songs) {
 
     li.innerHTML = `
       <div class="song-number">${truncateText(rank)}</div>
-      <a href="${ext_url}" target="_blank">
+      <a href="${ext_url}" target="_blank" class="album-link">
         <img src="${img_url}" alt="Album" />
       </a>
       <div class="song-info">
@@ -508,6 +515,12 @@ function populateSongList(songs) {
         <span class="album">${truncateText(album_name)} (${truncateText(release_year)})</span>
       </div>
     `;
+
+    const link = li.querySelector(".album-link");
+      link.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
 
     if (index === 0) {
       li.classList.add("selected-song");
