@@ -2,6 +2,8 @@ html, body {
     width: 100%;
     height: 100%;
     font-family: 'DA Sans';
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 body {
@@ -21,7 +23,7 @@ h1 {
     font-family: 'Oleo Script Swash Caps';
     position: absolute;
     top: 2vh;
-    left: 50%;
+    left: 9%;
     transform: translateX(-50%);
     margin: 0;
     padding: 0;
@@ -31,9 +33,24 @@ h1 {
     font-size: 3rem;
     word-spacing: normal;
     letter-spacing: normal;
-    z-index: 10;
-    text-shadow: 0 0 1vh black;
+    text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
+    z-index: 100000;
+    opacity: 1;
 }
+
+#title {
+    opacity: 0;   
+    display: flex;
+    position: absolute;
+    left: 17vh;
+    z-index: 100001;
+
+}
+
+    #title.show {
+        transition: opacity 3s ease;
+        opacity: 1;
+    }
 
 p {
     text-align: center;
@@ -44,12 +61,18 @@ p {
 #globe {
     background: transparent;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0%;
+    left: 0;
+    transform: translateX(25%);
+    /*transform: translate(-50%, -50%); */
     width: 100vw;
     height: 100vh;
     z-index: 1;
+    transition: transform 0.5s ease;
+}
+
+#globe.enter {
+    transform: translateX(0);
 }
 
 .player {
@@ -62,20 +85,28 @@ p {
     bottom: 0;
     left: 50%;
     transform: translate(-50%, 100%);
-    width: 80%;
-    background: white;
-    color: black;
+    width: 100%;
+    background: rgb(0, 0, 0);
+    color: white;
     padding: 1.5vh;
     border-top-left-radius: 2vh;
     border-top-right-radius: 2vh;
     margin-top: 0vh;
-    box-shadow: 0 0 1vh black;
+    box-shadow: 0 0 1vh rgb(85, 85, 85);
     z-index: 1000;
     transition: transform 0.4s ease;
+    transition: box-shadow .5s ease;
 }
 
 .player.show {
     transform: translate(-50%, 0);
+}
+
+.player.play {
+    animation-name: color-change;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 #togglePlayer {
@@ -96,7 +127,8 @@ p {
     min-width: 0;
     margin-right: 1vh;
     overflow: hidden;
-    width: 25%;
+    padding-left: 1%;
+    width: 20%;
 }
 
 .songInfo strong{
@@ -118,21 +150,21 @@ p {
 
 .songInfo p {
     text-align: left;
-    color: black;
+    color: white;
     margin: 0px 0;
     opacity: 80%;
     font-size: 1.1rem;
 }
 
 .centerColumn {
-    flex: 0.8;
+    flex: 1;
     left: 50%;
     transform: translateX(-40%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 60vw;
+    width: 55vw;
     max-width: 900px;
     pointer-events: none;
     overflow: hidden;
@@ -150,7 +182,7 @@ p {
 .controls button {
     background: none;
     border: none;
-    color: black;
+    color: white;
     font-size: 1.6rem;
     cursor: pointer;
     padding: 10px;
@@ -181,7 +213,7 @@ p {
 
 .currentTime, .fullTime {
     font-size: 1rem;
-    color: black;
+    color: white;
     width: 4vw;
     text-align: center;
 }
@@ -190,7 +222,7 @@ p {
     flex-grow: 1;
     width: 100%;
     height: 0.7vh;
-    background: grey;
+    background: rgb(255, 255, 255);
     border-radius: 3px;
     overflow: hidden;
 }
@@ -198,42 +230,22 @@ p {
 .timelineBar {
     width: 0%;
     height: 100%;
-    background: black;
+    background: rgb(114, 114, 114);
     border-radius: 3px;
 }
 
 .extraDetails {
+    flex: .25;
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    color: black;
+    justify-content: center;
+    color: white;
     font-size: 1.2rem;
     font-family: 'DM Sans';
-    gap: 10vh;
-}
-
-.detailsLeft {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.detailsRight {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.detailsLeft {
-    text-align: left;
-}
-
-.detailsRight {
-    text-align: right;
 }
 
 .extraDetails p {
-    color: black;
+    color: white;
     margin: 2px 0;
     opacity: 80%;
     font-size: 1rem;
@@ -242,10 +254,10 @@ p {
 #options {
     background-color: white;
     font-family: "DM Sans";
-    width: 180px;
-    height: 27vh;
+    width: 25vh;
+    height: 22vh;
     position: absolute;
-    top: 2vh;
+    top: 10vh;
     right: 2vh;
     font-size: 1.3rem;
     border-radius: 1rem;
@@ -253,11 +265,21 @@ p {
     padding: 1rem;
     box-sizing: border-box;
     transition: transform 0.4s ease;
+    transform: translateX(120%);
+    visibility: hidden;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.6);
 }
 
-#options.hidden {
-    transform: translateX(120%);
+#options.show {
+    transform: translateX(0%);
+    visibility: visible;
 }
+
+    #options p {
+        font-family: "DM Sans";
+        font-weight: 1000;
+        margin-bottom: 20px;
+    }
 
 .volume {
     display: flex;
@@ -268,7 +290,7 @@ p {
 
 .volume i {
     font-size: 1rem;
-    color: black;
+    color: white;
 }
 
 #volumeBar {
@@ -287,6 +309,7 @@ p {
 .radio {
     display: flex;
     align-items: center;
+    padding-top: 10px;
     margin-bottom: 2vh;
     cursor: pointer;
     font-size: 1.1rem;
@@ -318,20 +341,77 @@ p {
     transform: translate(-50%, -50%);
 }
 
+#greeter {
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    width: 50%;
+    height: 100%;
+    background-color: rgb(22, 22, 22);
+    z-index: 100;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    transition: transform 1.5s ease;
+}
+
+    #greeter h1 {
+        left: 50%;
+        top: 35%;
+        font-size: 4rem;
+        opacity: 1;
+    }
+
+    #greeter p {
+        text-align: center;
+        font-family: 'DM Sans';
+    }
+
+    #greeter button {
+        box-sizing: border-box;
+        border-radius: 10%/50%;
+        padding: 1% 3%;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        background-color: white;
+        font-family: 'DM Sans';
+        overflow: visible;
+        transition: transform 0.2 ease;
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+    }
+
+    #greeter button:hover {
+        background-color: black;
+        color: white;
+    }
+
+#greeter.hidden {
+    transform: translateX(-150%);
+}
+
+
 /* Top Songs Popup */
 .info {
     position: absolute;
     display: inline-block;
-    top: 5%;
-    left: 2%;
+    top: 10%;
+    left: 1%;
     transform: translateX(-150%);
-    width: 28vw;
+    width: 40vw;
     min-width: 340px;
     max-width: 500px;
-    height: 70vh;
+    height: 75vh;
     background-color: white;
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
@@ -351,7 +431,7 @@ p {
     }
 
         .info .header h1 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin: 0;
             color: black;
             text-shadow: none;
@@ -374,32 +454,36 @@ p {
 
 #exitButton {
   position: absolute;
-  right: 2.75%; /* stick outside the container */
-  top: 2%;
-  width: 30px;
-  height: 30px;
-  z-index: 1002;
+  left: 27.8%;
+  top: 12%;
+  width: 50px;
+  height: 50px;
+  z-index: 100;
+}
+
+.exit-button.show {
+    transform: translateX(10%);
 }
 
 .exit-button {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  transform: translateX(-1500%);
+  border-top-right-radius: 25%;
+  border-bottom-right-radius: 25%;
   border: none;
   background-color: #f41919;
   color: white;
   font-weight: bold;
   cursor: pointer;
+  text-align: right;
+  padding-right: 30%;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   transition: transform 0.2s ease;
 }
 
-#topSongs.show .exit-button {
-  transform: scale(1.2);
-}
-
-#topSongs.show .exit-button:hover {
-  transform: scale(1.4);
+.exit-button:hover {
+  transform: translateX(20%);
 }
 
 .custom-dropdown {
@@ -428,13 +512,19 @@ p {
         justify-content: space-between;
         min-height: 2.8rem;
         box-sizing: border-box;
+        z-index: 1000;
     }
 
         .custom-dropdown .selected::after {
-            content: "v";
+            content: "↓";
             font-size: 1.2rem;
             color: #555;
         }
+
+        .custom-dropdown .selected.open::after {
+            content: "↑";
+        }
+
 
     .custom-dropdown .options {
         font-family: "DM Sans";
@@ -447,12 +537,19 @@ p {
         border-radius: 10px;
         border: 1px solid #ccc;
         background-color: white;
-        display: none;
+        display: block;
         box-sizing: border-box;
         padding: 0;
         margin: 0;
+        opacity: 0;
         box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        transition: opacity 0.5s;
+        z-index: 2000;
     }
+
+        .custom-dropdown .options.show {
+            opacity: 1;
+        }
 
         .custom-dropdown .options li {
             padding: 0.8rem 1rem;
@@ -466,6 +563,29 @@ p {
                 background-color: #eee;
             }
 
+    .custom-dropdown .options::-webkit-scrollbar {
+        width: 10px;
+    }
+    
+    .custom-dropdown .options::-webkit-scrollbar-track {
+        background: white;
+        border-radius: 5px;
+    }
+
+    .custom-dropdown .options::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 1);
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+
+    .custom-dropdown .options::-webkit-scrollbar-thumb:hover {
+        background: black;
+    }
+
+    .custom-dropdown .options::-webkit-scrollbar-corner {
+    background: transparent;
+    }
+
 
 .songList {
     font-family: "DM Sans";
@@ -477,19 +597,43 @@ p {
     margin-top: 0.5rem;
     overflow-x: visible;
     position: relative;
+    padding-right: 10px;
 }
-    .songList ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+
+    .songList::-webkit-scrollbar {
+        width: 10px;
     }
+    
+    .songList::-webkit-scrollbar-track {
+        background: white;
+        border-radius: 5px;
+    }
+
+    .songList::-webkit-scrollbar-thumb {
+        background: rgba(62, 62, 62, 0.5);
+        border-radius: 5px;
+        transition: backgroung 0.3s;
+    }
+
+    .songList::-webkit-scrollbar-thumb:hover {
+        background: black;
+    }
+
+    .songList::-webkit-scrollbar-corner {
+    background: transparent;
+    }
+    
+    .songList ul {
+        padding-left: 10px;
+    }
+
 
     .songList li {
         display: grid;
         grid-template-columns: 40px 60px 1fr;
         align-items: center;
         padding: 10px 5px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 0px solid #eee;
         gap: 10px;
         position: relative;
         width: 85%;
@@ -512,7 +656,7 @@ p {
   align-items: center;
   padding: 10px;
   margin-bottom: 8px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(240, 240, 240, 0.5);
   border-radius: 8px;
   transition: transform 0.3s ease, box-shadow 0.3s ease; 
   cursor: pointer;
@@ -563,12 +707,13 @@ p {
 }
 
 .selected-song {
-    background: linear-gradient(90deg, #4ba0e7 0%, #ffffff 100%);
-    border-left: 6px solid #177bd9;
+    background: linear-gradient(90deg, #4ba0e7 0%, #ffffff 70%);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); 
     border-radius: 10px;
     transform: scale(1.05);
     transition: all 0.5s ease;
     z-index: 5;
+    border-bottom: 0;
 }
 
 #searchBar {
@@ -578,17 +723,23 @@ p {
   transform: translateX(-50%);
   z-index: 10;
   transition: transform 0.4s ease;
+  transition: opacity 0.25s;
 
   display: flex;
   flex-direction: column;
   align-items: stretch;
 
   width: min(90vw, 320px);
+  opacity: 0;
 }
 
 #searchBar.move {
     transform: translate(-50%, -155%);
     transition: transform 0.4s ease;
+}
+
+#searchBar.show {
+    opacity: 1;
 }
 
 #countryInput {
@@ -655,4 +806,12 @@ p {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+@keyframes color-change {
+    0% { box-shadow: 0 0 1vh rgb(85, 85, 85); }
+    25% { box-shadow: 0 0 1vh rgb(38, 255, 0); }
+    50% { box-shadow: 0 0 1vh rgb(0, 204, 255); }
+    75% { box-shadow: 0 0 1vh rgb(255, 0, 0); }
+    100% { box-shadow: 0 0 1vh rgb(85, 85, 85); }
 }

@@ -5,7 +5,7 @@ import { Country } from "./Country.js"
 import { next } from '@vercel/edge';
 //import { build } from 'vite';
 
-//import * as THREE from 'three'
+import * as THREE from 'three'
 
 const globeContainer = document.getElementById('globe');
 
@@ -27,6 +27,9 @@ console.log("Current week:", selectedWeek);
 
 // selected country ISO
 let selectedCountryISO = null;
+
+const exitButton = document.getElementById("closeTopSongs");
+
 
 // search bar
 let countryFeatures = [];
@@ -54,9 +57,16 @@ const globe = Globe()(globeContainer)
   .showAtmosphere(true)
   .atmosphereAltitude(0.2);
 
-//globe.controls().autoRotate = true;
-globe.controls().autoRotateSpeed = 0.6;
-globe.camera().position.z = 300;
+globe.controls().autoRotate = true;
+globe.controls().autoRotateSpeed = 0.3;
+globe.controls().enableZoom = false;
+globe.controls().enablePan = false;
+globe.controls().enableRotate = false;
+
+globe.width(window.innerWidth);
+globe.height(window.innerHeight);
+
+globe.polygonStrokeColor(() => 'rgba(0,0,0,0)');
 
 let hover = null;
 let highlightedCountry = null;
@@ -81,8 +91,12 @@ function selectCountry(d) {
   console.log("Name:",d.properties.name);
   console.log("ISO Alpha-2:", d.properties.iso_a2);
 
-  if(d.properties.iso_a2 === "-99") {
+  if(d.properties.name == "France") {
     selectedCountryISO = "FR";
+  } else if (d.properties.name == "Norway") {
+    selectedCountryISO = "NO";
+  } else if (d.properties.name == "Somaliland"){
+    selectedCountryISO = "SO";
   } else {
     selectedCountryISO = d.properties.iso_a2;
   }
@@ -101,6 +115,7 @@ function selectCountry(d) {
   player.classList.add("show");
   topSongs.classList.add("show");
   searchBar.classList.add("move");
+  exitButton.classList.add("show");
 
   highlightedCountry = d.properties.iso_a2;
   globe.polygonCapColor(p => {
@@ -114,7 +129,36 @@ function selectCountry(d) {
   });
 }
 
-fetch('/custom.geo.json')
+window.addEventListener('resize', () => {
+  globe.width(window.innerWidth);
+  globe.height(window.innerHeight);
+});
+
+// enter button
+const enterButton = document.getElementById("enter");
+const greeterContainer = document.getElementById("greeter");
+const globeElement = document.getElementById("globe");
+const title = document.getElementById("title");
+
+enterButton.addEventListener("click", () => {
+  console.log("enter");
+
+  searchBar.classList.add("show");
+  optionContainer.classList.add("show");
+  greeterContainer.classList.add("hidden");
+  globeElement.classList.add("enter");
+  
+  globe.controls().autoRotate = false;
+  globe.controls().enableZoom = true;
+  globe.controls().enablePan = true;
+  globe.controls().enableRotate = true;
+
+  setTimeout(() => {
+    title.offsetWidth; 
+    title.classList.add("show");
+  }, 500);
+
+  fetch('/custom.geo.json')
   .then(res => res.json())
   .then(data => {
     // centering upon zoom according to country data
@@ -165,24 +209,20 @@ fetch('/custom.geo.json')
         return;
       }
 
+      console.log("countryName: " + d.properties.name);
       selectCountry(d);
     });
   });
-
-
-window.addEventListener('resize', () => {
-  globe.width([window.innerWidth]);
-  globe.height([window.innerHeight]);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
-    const exitButton = document.getElementById("closeTopSongs");
     exitButton.addEventListener("click", () => {
         audio.pause();
         player.classList.remove("show");
         topSongs.classList.remove("show");
         searchBar.classList.remove("move");
+        exitButton.classList.remove("show");
     });
 
     loadingElement = document.getElementById("loading");
@@ -217,24 +257,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
-            optionsList.style.display = optionsList.style.display === "block" ? "none" : "block";
+            if(!selected.classList.contains("open")){
+              selected.classList.add("open");
+              optionsList.classList.add("show");
+            } else {
+              selected.classList.remove("open");
+              optionsList.classList.remove("show");
+            }
         });
 
         optionsList.querySelectorAll("li").forEach(option => {
             option.addEventListener("click", () => {
                 selected.textContent = option.textContent;
-                optionsList.style.display = "none";
                 selectedWeek = option.getAttribute("data-value");
                 console.log("Selected week:", selectedWeek);
                 if (selectedCountryISO) {
                   fetchTopSongs(selectedCountryISO);
                 } 
+                selected.classList.remove("open");
+                optionsList.classList.remove("show");
             });
         });
 
         document.addEventListener("click", e => {
             if (!dropdown.contains(e.target)) {
-                optionsList.style.display = "none";
+                selected.classList.remove("open");
+                optionsList.classList.remove("show");
             }
         });
     }
@@ -261,10 +309,12 @@ document.addEventListener("DOMContentLoaded", () => {
     playButton.addEventListener("click", () => {
         if (audio.paused) {
             audio.play();
+            player.classList.add("play");
             playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
         }
         else {
             audio.pause();
+            player.classList.remove("play");
             playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
     });
@@ -295,6 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
       playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
       timelineBar.style.width = "0%";
       currentTime.textContent = "0:00";
+      player.classList.remove("play");
     });
 
     barContainer.addEventListener("click", (e) => {
@@ -318,6 +369,7 @@ async function audioPreview(title, artist) {
         audio.src = usedAudios.get(search);
         audio.currentTime = 0;
         audio.play();
+        player.classList.add("play");
         return;
       }
 
@@ -455,6 +507,8 @@ function playSong(index) {
   audioPreview(song.track_name, song.artist_name);
 
   playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+  player.classList.add("play");
 }
 
 function nextSong() {
@@ -505,7 +559,6 @@ function populateSongList(songs) {
       <div class="song-info">
         <span class="title">${truncateText(track_name)}</span>
         <span class="artist">${truncateText(artist_name)}</span>
-        <span class="album">${truncateText(album_name)} (${truncateText(release_year)})</span>
       </div>
     `;
 
