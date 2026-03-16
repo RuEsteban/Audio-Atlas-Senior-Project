@@ -22,7 +22,7 @@ body {
 h1 {
     font-family: 'Oleo Script Swash Caps';
     position: absolute;
-    top: 2vh;
+    top: 1vh;
     left: 9%;
     transform: translateX(-50%);
     margin: 0;
@@ -80,7 +80,8 @@ p {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 1.5vh;
+    padding-bottom: 1.5vh;
+    padding-top: 0%;
     position: fixed;
     bottom: 0;
     left: 50%;
@@ -88,7 +89,6 @@ p {
     width: 100%;
     background: rgb(0, 0, 0);
     color: white;
-    padding: 1.5vh;
     border-top-left-radius: 2vh;
     border-top-right-radius: 2vh;
     margin-top: 0vh;
@@ -255,7 +255,7 @@ p {
     background-color: white;
     font-family: "DM Sans";
     width: 25vh;
-    height: 22vh;
+    height: 225px;
     position: absolute;
     top: 10vh;
     right: 2vh;
@@ -405,13 +405,16 @@ p {
     top: 10%;
     left: 1%;
     transform: translateX(-150%);
-    width: 40vw;
-    min-width: 340px;
+    width: 30vw;
+    min-width: 300px;
     max-width: 500px;
     height: 75vh;
     background-color: white;
     border-radius: 15px;
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 0;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
@@ -519,10 +522,19 @@ p {
             content: "↓";
             font-size: 1.2rem;
             color: #555;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown .selected:hover::after {
+            transform: scale(1.25);
         }
 
         .custom-dropdown .selected.open::after {
             content: "↑";
+        }
+
+        .custom-dropdown .selected.open:hover::after {
+            transform: scale(1.25);
         }
 
 
@@ -591,7 +603,7 @@ p {
     font-family: "DM Sans";
     flex: 1;
     overflow-y: auto;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #b7b7b7;
     padding-top: 1rem;
     background: white;
     margin-top: 0.5rem;
@@ -605,7 +617,7 @@ p {
     }
     
     .songList::-webkit-scrollbar-track {
-        background: white;
+        background: rgba(255,255,255,0);
         border-radius: 5px;
     }
 
