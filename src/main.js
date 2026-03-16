@@ -579,7 +579,8 @@ function populateSongList(songs) {
     if (index === 0) {
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = truncateText(song.track_name);
+      document.getElementById("songName").innerHTML =
+        `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
       document.getElementById("artistName").textContent = truncateText(song.artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
@@ -594,7 +595,8 @@ function populateSongList(songs) {
 
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = truncateText(track_name);
+      document.getElementById("songName").innerHTML =
+        `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
       document.getElementById("artistName").textContent = truncateText(artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(album_name)} (${truncateText(release_year)})`;
