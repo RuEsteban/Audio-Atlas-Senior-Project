@@ -7,7 +7,7 @@ html, body {
 }
 
 body {
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0,0,0,1);
     background-blend-mode: overlay;
     background-repeat: no-repeat;
     background-size: cover;
@@ -73,6 +73,11 @@ p {
 
 #globe.enter {
     transform: translateX(0);
+}
+
+#globe.select {
+    transform: translate(10%, -5%);
+    ;
 }
 
 .player {
@@ -408,14 +413,31 @@ p {
     transform: translateX(-150%);
 }
 
+#songContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 1s ease;
+    background-color: transparent;
+    pointer-events: none;
+}
 
-/* Top Songs Popup */
+    #songContainer.show {
+        transform: translateX(0);
+    }
+
 .info {
     position: absolute;
     display: inline-block;
     top: 10%;
     left: 1%;
-    transform: translateX(-150%);
     width: 30vw;
     min-width: 300px;
     max-width: 500px;
@@ -431,11 +453,8 @@ p {
     flex-direction: column;
     z-index: 1001;
     transition: transform 0.4s ease;
+    pointer-events: all;
 }
-
-    .info.show {
-        transform: translateX(0);
-    }
 
     .info .header {
         display: flex;
@@ -468,11 +487,12 @@ p {
 
 #exitButton {
   position: absolute;
-  left: 27.8%;
+  left: 32vw;
   top: 12%;
   width: 50px;
   height: 50px;
   z-index: 100;
+  pointer-events: all;
 }
 
 .exit-button.show {
@@ -494,6 +514,7 @@ p {
   padding-right: 30%;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   transition: transform 0.2s ease;
+  pointer-events: all;
 }
 
 .exit-button:hover {
@@ -509,6 +530,7 @@ p {
     cursor: pointer;
     user-select: none;
     z-index: 1002;
+    pointer-events: all;
 }
 
     .custom-dropdown .selected {

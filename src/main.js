@@ -42,6 +42,7 @@ const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
 const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
+const songContainer = document.getElementById("songContainer");
 let loadingElement;
 
 // Globe creation
@@ -113,9 +114,10 @@ function selectCountry(d) {
   }
 
   player.classList.add("show");
-  topSongs.classList.add("show");
+  songContainer.classList.add("show");
   searchBar.classList.add("move");
   exitButton.classList.add("show");
+  globeContainer.classList.add("select");
 
   highlightedCountry = d.properties.iso_a2;
   globe.polygonCapColor(p => {
@@ -220,9 +222,11 @@ document.addEventListener("DOMContentLoaded", () => {
     exitButton.addEventListener("click", () => {
         audio.pause();
         player.classList.remove("show");
-        topSongs.classList.remove("show");
+        player.classList.remove("play");
+        songContainer.classList.remove("show");
         searchBar.classList.remove("move");
         exitButton.classList.remove("show");
+        globeContainer.classList.remove("select");
     });
 
     loadingElement = document.getElementById("loading");
