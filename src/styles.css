@@ -23,7 +23,7 @@ h1 {
     font-family: 'Oleo Script Swash Caps';
     position: absolute;
     top: 1vh;
-    left: 9%;
+    left: 10%;
     transform: translateX(-50%);
     margin: 0;
     padding: 0;
@@ -34,7 +34,7 @@ h1 {
     word-spacing: normal;
     letter-spacing: normal;
     text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
-    z-index: 100000;
+    z-index: 1000;
     opacity: 1;
 }
 
@@ -42,8 +42,8 @@ h1 {
     opacity: 0;   
     display: flex;
     position: absolute;
-    left: 17vh;
-    z-index: 100001;
+    left: 20vh;
+    z-index: 1000;
 
 }
 
@@ -97,10 +97,9 @@ p {
     border-top-left-radius: 2vh;
     border-top-right-radius: 2vh;
     margin-top: 0vh;
-    box-shadow: 0 0 1vh rgb(85, 85, 85);
-    z-index: 1000;
-    transition: transform 0.4s ease;
-    transition: box-shadow .5s ease;
+    box-shadow: 0 0 3vh rgb(134, 134, 134);
+    z-index: 1003;
+    transition: transform 1s ease, box-shadow .5s ease;
 }
 
 .player.show {
@@ -268,9 +267,9 @@ p {
 }
 
 #options {
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     font-family: "DM Sans";
-    width: 25vh;
+    width: 20vh;
     height: 225px;
     position: absolute;
     top: 10vh;
@@ -284,6 +283,18 @@ p {
     transform: translateX(120%);
     visibility: hidden;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.6);
+}
+
+#options.lastfm {
+    background-color: rgb(255, 0, 0);
+}
+
+#options.spotify {
+    background-color: rgb(30, 215, 96);
+}
+
+#options.agg {
+    background-color: rgb(19, 220, 255);
 }
 
 #options.show {
@@ -436,14 +447,14 @@ p {
 .info {
     position: absolute;
     display: inline-block;
-    top: 10%;
-    left: 1%;
-    width: 30vw;
+    top: 0%;
+    left: 0%;
+    width: 475px;
     min-width: 300px;
     max-width: 500px;
-    height: 75vh;
-    background-color: white;
-    border-radius: 15px;
+    height: 87vh;
+    background-color: rgba(255,255,255,1);
+    border-top-right-radius: 15px;
     padding-top: 1rem;
     padding-left: 1rem;
     padding-right: 1rem;
@@ -451,7 +462,7 @@ p {
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
-    z-index: 1001;
+    z-index: 1002;
     transition: transform 0.4s ease;
     pointer-events: all;
 }
@@ -487,7 +498,7 @@ p {
 
 #exitButton {
   position: absolute;
-  left: 32vw;
+  left: 487px;
   top: 12%;
   width: 50px;
   height: 50px;
@@ -511,7 +522,7 @@ p {
   font-weight: bold;
   cursor: pointer;
   text-align: right;
-  padding-right: 30%;
+  padding-right: 25%;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   transition: transform 0.2s ease;
   pointer-events: all;
@@ -640,7 +651,7 @@ p {
     overflow-y: auto;
     border-top: 1px solid #b7b7b7;
     padding-top: 1rem;
-    background: white;
+    background-color: rgba(255,255,255,0.5);
     margin-top: 0.5rem;
     overflow-x: visible;
     position: relative;
@@ -766,12 +777,10 @@ p {
 #searchBar {
   position: absolute;
   left: 50%;
-  bottom: 50px;
+  bottom: 2vh;
   transform: translateX(-50%);
   z-index: 2000;
-  transition: transform 0.4s ease;
-  transition: opacity 0.25s;
-
+  transition: transform 1s ease, opacity 0.25s;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -781,8 +790,7 @@ p {
 }
 
 #searchBar.move {
-    transform: translate(-50%, -155%);
-    transition: transform 0.4s ease;
+    transform: translate(-50%, -73px);
 }
 
 #searchBar.show {

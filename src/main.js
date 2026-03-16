@@ -98,6 +98,8 @@ function selectCountry(d) {
     selectedCountryISO = "NO";
   } else if (d.properties.name == "Somaliland"){
     selectedCountryISO = "SO";
+  } else if (d.properties.name == "Kosovo") {
+    selectedCountryISO = "XK"; 
   } else {
     selectedCountryISO = d.properties.iso_a2;
   }
@@ -181,7 +183,7 @@ enterButton.addEventListener("click", () => {
     globe
       .polygonsData(countries)
       .polygonSideColor(() => 'rgba(0,0,0,0)')
-      .polygonStrokeColor(() => '#00eaff')
+      .polygonStrokeColor(() => '#00eeff')
       .polygonCapColor(d => {
         if (disabledCountries.includes(d.properties.iso_a2)) {
           return 'rgba(128,128,128,0.6)';
@@ -240,6 +242,23 @@ document.addEventListener("DOMContentLoaded", () => {
             if (selectedCountryISO) {
               fetchTopSongs(selectedCountryISO);
             }
+
+            if(selectedDatabase === "lastfm") {
+              options.classList.add("lastfm");
+              options.classList.remove("spotify");
+              options.classList.remove("agg"); 
+            }
+            else if(selectedDatabase === "spotify") {
+              options.classList.add("spotify");
+              options.classList.remove("lastfm");
+              options.classList.remove("agg");
+            }
+            else {
+              options.classList.remove("spotify");
+              options.classList.remove("lastfm");
+              options.classList.add("agg");
+            }
+
         });
     });
 
