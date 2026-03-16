@@ -70,7 +70,7 @@ globe.polygonStrokeColor(() => 'rgba(0,0,0,0)');
 
 let hover = null;
 let highlightedCountry = null;
-const disabledCountries = ["BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
+const disabledCountries = ["RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
 
 function selectCountry(d) {
   const audio = document.getElementById("audioPlayer");
@@ -497,7 +497,8 @@ function playSong(index) {
 
   currSong = index;
 
-  document.getElementById("songName").textContent = truncateText(song.track_name || "Unknown");
+  document.getElementById("songName").innerHTML =
+  `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
   document.getElementById("artistName").textContent = truncateText(song.artist_name || "Unknown");
   document.getElementById("albumName").textContent = 
   `${truncateText(song.album_name || "Unknown")} (${truncateText(song.release_year || "Unknown")})`;
