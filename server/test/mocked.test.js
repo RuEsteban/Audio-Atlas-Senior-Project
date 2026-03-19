@@ -27,48 +27,48 @@ function jsonResponse(status, body) {
 }
 
 function makeFakeSupabase({ shouldError = false } = {}) {
-  return {
-    from() {
-      return {
-        select() {
-          return {
-            async limit() {
-              if (shouldError) return { data: null, error: { message: 'db error' } }
-              return { data: [{ id: 1 }], error: null }
+    return {
+        from() {
+            return {
+                select() {
+                    return {
+                        async limit() {
+                            if (shouldError) return { data: null, error: { message: 'db error' } }
+                            return { data: [{ id: 1 }], error: null }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 }
 
 test('GET /health/supabase returns ok=true when query succeeds', async () => {
-  const app = buildApp({ enableSupabase: false })
+    const app = buildApp({ enableSupabase: false })
 
-  // IMPORTANT: decorate BEFORE inject triggers app readiness
-  app.decorate('supabase', makeFakeSupabase())
+    // IMPORTANT: decorate BEFORE inject triggers app readiness
+    app.decorate('supabase', makeFakeSupabase())
 
-  const res = await app.inject({ method: 'GET', url: '/health/supabase' })
-  await app.close()
+    const res = await app.inject({ method: 'GET', url: '/health/supabase' })
+    await app.close()
 
-  assert.equal(res.statusCode, 200)
-  const body = res.json()
-  assert.equal(body.provider, 'supabase')
-  assert.equal(body.ok, true)
+    assert.equal(res.statusCode, 200)
+    const body = res.json()
+    assert.equal(body.provider, 'supabase')
+    assert.equal(body.ok, true)
 })
 
 test('GET /health/supabase returns ok=false when query errors', async () => {
-  const app = buildApp({ enableSupabase: false })
-  app.decorate('supabase', makeFakeSupabase({ shouldError: true }))
+    const app = buildApp({ enableSupabase: false })
+    app.decorate('supabase', makeFakeSupabase({ shouldError: true }))
 
-  const res = await app.inject({ method: 'GET', url: '/health/supabase' })
-  await app.close()
+    const res = await app.inject({ method: 'GET', url: '/health/supabase' })
+    await app.close()
 
-  assert.equal(res.statusCode, 502)
-  const body = res.json()
-  assert.equal(body.provider, 'supabase')
-  assert.equal(body.ok, false)
+    assert.equal(res.statusCode, 502)
+    const body = res.json()
+    assert.equal(body.provider, 'supabase')
+    assert.equal(body.ok, false)
 })
 
 test('GET /health/spotify returns ok=true when Spotify token + API succeed', async () => {
@@ -98,24 +98,24 @@ test('GET /health/spotify returns ok=true when Spotify token + API succeed', asy
 })
 
 test('GET /health/lastfm returns ok=true when Last.fm API succeeds', async () => {
-  process.env.LASTFM_API_KEY = 'k'
+    process.env.LASTFM_API_KEY = 'k'
 
-  const originalFetch = globalThis.fetch
-  globalThis.fetch = mockFetch([
-    {
-      match: (u) => u.includes('ws.audioscrobbler.com/2.0/'),
-      respond: async () =>
-        jsonResponse(200, { tracks: { track: [{ name: 'DtMF' }] } })
-    }
-  ])
+    const originalFetch = globalThis.fetch
+    globalThis.fetch = mockFetch([
+        {
+            match: (u) => u.includes('ws.audioscrobbler.com/2.0/'),
+            respond: async () =>
+            jsonResponse(200, { tracks: { track: [{ name: 'DtMF' }] } })
+        }
+    ])
 
-  const app = buildApp()
-  const res = await app.inject({ method: 'GET', url: '/health/lastfm' })
-  await app.close()
-  globalThis.fetch = originalFetch
+    const app = buildApp()
+    const res = await app.inject({ method: 'GET', url: '/health/lastfm' })
+    await app.close()
+    globalThis.fetch = originalFetch
 
-  assert.equal(res.statusCode, 200)
-  const body = res.json()
-  assert.equal(body.provider, 'lastfm')
-  assert.equal(body.ok, true)
+    assert.equal(res.statusCode, 200)
+    const body = res.json()
+    assert.equal(body.provider, 'lastfm')
+    assert.equal(body.ok, true)
 })
