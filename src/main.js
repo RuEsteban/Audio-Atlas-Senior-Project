@@ -28,7 +28,7 @@ console.log("Current week:", selectedWeek);
 // selected country ISO
 let selectedCountryISO = null;
 
-const exitButton = document.getElementById("closeTopSongs");
+const exitButton = document.getElementById("exitButton");
 
 
 // search bar
@@ -227,12 +227,10 @@ toggleOptions.addEventListener("click", () => {
     toggleOptions.classList.remove("show");
     toggleOptions.classList.add("hide");
     optionContainer.classList.remove("show");
-    toggleOptions.textContent = "←";
   } else {
     toggleOptions.classList.add("show");
     toggleOptions.classList.remove("hide");
     optionContainer.classList.add("show");
-    toggleOptions.textContent = "→";
   }
 });
 
