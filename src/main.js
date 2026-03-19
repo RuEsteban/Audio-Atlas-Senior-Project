@@ -594,7 +594,7 @@ function populateSongList(songs) {
     const li = document.createElement("li");
 
     let ext_url = song.external_url || "#";
-    let img_url = song.image_url || '/img/default-album.png';
+    let img_url = song.image_url || '/img/vinyl-icon.webp';
     let rank = song.rank || "-";
     let track_name = song.track_name || "Unknown";
     let artist_name = song.artist_name || "Unknown";
