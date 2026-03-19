@@ -3,7 +3,7 @@
 import { getCombinedTopTracks } from "../../services/chartAggregationCombinedService.js"
 
 export default async function combinedChartsRoutes(fastify) {
-    fastify.get('/api/combined/:date/:country/top-tracks', async (request, reply) => {
+    fastify.get('/api/aggregate/:date/:country/top-tracks', async (request, reply) => {
         try {
             const { date, country } = request.params
 

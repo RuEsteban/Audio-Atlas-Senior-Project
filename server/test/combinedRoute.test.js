@@ -2,12 +2,12 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { buildApp } from '../src/app.js'
 
-test('GET /api/combined/:date/:country/top-tracks returns combined chart response', async () => {
+test('GET /api/aggregate/:date/:country/top-tracks returns combined chart response', async () => {
     const app = buildApp()
 
     const res = await app.inject({
         method: 'GET',
-        url: '/api/combined/2026-03-05/US/top-tracks'
+        url: '/api/aggregate/2026-03-05/US/top-tracks'
     })
 
     await app.close()
