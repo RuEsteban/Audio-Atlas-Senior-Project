@@ -8,6 +8,7 @@ import ingestRoutes from './routes/charts/ingestRoutes.js'
 import spotifyIngestRoutes from './routes/charts/spotifyIngestRoutes.js'
 import countryRoutes from './routes/charts/countryRoutes.js'
 import bulkWeeklyIngestRoutes from './routes/charts/bulkWeeklyIngestRoutes.js'
+import combinedChartsRoutes from './routes/charts/combinedChartsRoutes.js'
 
 export function buildApp({ enableSupabase = true } = {}) {
     const fastify = Fastify({ logger: true})
@@ -24,5 +25,6 @@ export function buildApp({ enableSupabase = true } = {}) {
     fastify.register(spotifyIngestRoutes)
     fastify.register(countryRoutes)
     fastify.register(bulkWeeklyIngestRoutes)
+    fastify.register(combinedChartsRoutes)
     return fastify
 }
