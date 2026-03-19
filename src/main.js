@@ -43,6 +43,7 @@ const player = document.getElementById("musicPlayer");
 const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
 const songContainer = document.getElementById("songContainer");
+const toggleOptions = document.getElementById("toggleOptions");
 let loadingElement;
 
 // Globe creation
@@ -71,7 +72,7 @@ globe.polygonStrokeColor(() => 'rgba(0,0,0,0)');
 
 let hover = null;
 let highlightedCountry = null;
-const disabledCountries = ["RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
+const disabledCountries = ["AQ", "RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
 
 function selectCountry(d) {
   const audio = document.getElementById("audioPlayer");
@@ -120,6 +121,7 @@ function selectCountry(d) {
   searchBar.classList.add("move");
   exitButton.classList.add("show");
   globeContainer.classList.add("select");
+  title.classList.remove("show");
 
   highlightedCountry = d.properties.iso_a2;
   globe.polygonCapColor(p => {
@@ -151,6 +153,7 @@ enterButton.addEventListener("click", () => {
   optionContainer.classList.add("show");
   greeterContainer.classList.add("hidden");
   globeElement.classList.add("enter");
+  toggleOptions.classList.add("show");
   
   globe.controls().autoRotate = false;
   globe.controls().enableZoom = true;
@@ -219,6 +222,21 @@ enterButton.addEventListener("click", () => {
   });
 });
 
+toggleOptions.addEventListener("click", () => {
+  if (optionContainer.classList.contains("show") || !toggleOptions.classList.contains("hide")) {
+    toggleOptions.classList.remove("show");
+    toggleOptions.classList.add("hide");
+    optionContainer.classList.remove("show");
+    toggleOptions.textContent = "←";
+  } else {
+    toggleOptions.classList.add("show");
+    toggleOptions.classList.remove("hide");
+    optionContainer.classList.add("show");
+    toggleOptions.textContent = "→";
+  }
+});
+
+
 document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
     exitButton.addEventListener("click", () => {
@@ -229,6 +247,9 @@ document.addEventListener("DOMContentLoaded", () => {
         searchBar.classList.remove("move");
         exitButton.classList.remove("show");
         globeContainer.classList.remove("select");
+        title.classList.add("show");
+
+        highlightedCountry = null;
     });
 
     loadingElement = document.getElementById("loading");

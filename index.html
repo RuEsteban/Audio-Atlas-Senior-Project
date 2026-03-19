@@ -11,6 +11,7 @@
 <body>
 	<div id="title" class="titleText">
 		<h1>Audio Atlas</h1>
+		<p><a href="https://www.youtube.com/watch?v=Xt9xzgDL62Y" target="_blank">Info</a></p>
 	</div>
 
 	<div id="greeter">
@@ -56,27 +57,30 @@
 		</div>
 	</div>
 
-	<div id="options" class="optionContainer">
-		<p>Select a Database</p>
-		<form>
-			<label class="radio">
-				<input type="radio" name="database" value="lastfm" checked>
-				<span class="custom-radio"></span>
-				Last.fm
-			</label>
+	<div id="selectOptions">
+		<div id="toggleOptions">→</div>
+		<div id="options" class="optionContainer">
+			<p>Select a Database</p>
+			<form>
+				<label class="radio">
+					<input type="radio" name="database" value="lastfm" checked>
+					<span class="custom-radio"></span>
+					Last.fm
+				</label>
 
-			<label class="radio">
-				<input type="radio" name="database" value="spotify">
-				<span class="custom-radio"></span>
-				Spotify
-			</label>
+				<label class="radio">
+					<input type="radio" name="database" value="spotify">
+					<span class="custom-radio"></span>
+					Spotify
+				</label>
 
-			<label class="radio">
-				<input type="radio" name="database" value="aggregate">
-				<span class="custom-radio"></span>
-				Aggregate
-			</label>
-		</form>
+				<label class="radio">
+					<input type="radio" name="database" value="aggregate">
+					<span class="custom-radio"></span>
+					Aggregate
+				</label>
+			</form>
+		</div>
 	</div>
 
 	<div id="searchBar">

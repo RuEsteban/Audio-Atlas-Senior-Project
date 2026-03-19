@@ -44,12 +44,31 @@ h1 {
     position: absolute;
     left: 20vh;
     z-index: 1000;
-
+    transition: opacity .5s;
 }
 
     #title.show {
-        transition: opacity 3s ease;
         opacity: 1;
+        transition: opacity 2s;
+    }
+
+    #title p {
+        position: absolute;
+        font-size: 1.5rem;
+        color: white;
+        margin: 0;
+        top: 30px;
+        left: 150px;
+        text-align: right;
+    }
+
+    #title p:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    #title a {
+        color:inherit;
     }
 
 p {
@@ -266,20 +285,63 @@ p {
     font-size: 1rem;
 }
 
+#toggleOptions {
+    content: "→";
+    position: absolute;
+    top: 50px;
+    right: 200px;
+    width: 28px;
+    height: 28px;
+    line-height: normal;
+    padding-left: 10px;
+    padding-right: 0px;
+    border-top-left-radius: 25%;
+    border-bottom-left-radius: 25%;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    padding-top: 5px;
+    padding-bottom: 3px;
+    z-index: 100;
+    background-color: rgb(255, 0, 0);
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    transform: translateX(1000%);
+    transition: all 0.2s ease;
+}
+
+#toggleOptions:hover {
+   padding-right: 10px;
+}
+
+#toggleOptions.show {
+    transform: translateX(0%);
+}
+
+#toggleOptions.hide {
+    transform: translateX(200px);
+    padding-right: 0px;}
+
+#toggleOptions.hide:hover {
+    transform: translateX(200px);
+    padding-right: 10px;
+}
+
 #options {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(255, 0, 0);
     font-family: "DM Sans";
-    width: 20vh;
+    width: 200px;
     height: 225px;
     position: absolute;
-    top: 10vh;
-    right: 2vh;
+    top: 10px;
+    right: 2px;
     font-size: 1.3rem;
     border-radius: 1rem;
     z-index: 1000;
     padding: 1rem;
     box-sizing: border-box;
-    transition: transform 0.4s ease;
+    transition: all 0.4s ease;
     transform: translateX(120%);
     visibility: hidden;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.6);
@@ -453,7 +515,7 @@ p {
     min-width: 300px;
     max-width: 500px;
     height: 87vh;
-    background-color: rgba(255,255,255,1);
+    background-color: rgba(0, 0, 0, 0.5);
     border-top-right-radius: 15px;
     padding-top: 1rem;
     padding-left: 1rem;
@@ -472,12 +534,13 @@ p {
         flex-direction: column;
         margin-bottom: 1rem;
         text-align: center;
+        color: white;
     }
 
         .info .header h1 {
             font-size: 2.5rem;
             margin: 0;
-            color: black;
+            color: rgb(255, 255, 255);
             text-shadow: none;
             font-family: 'DM Sans';
             white-space: normal;
@@ -490,7 +553,7 @@ p {
 
         .info .header p {
             font-size: 1.2rem;
-            color: gray;
+            color: rgb(255, 255, 255);
             margin: 0;
             margin-top: 4%;
             margin-bottom: 0px;
@@ -498,9 +561,9 @@ p {
 
 #exitButton {
   position: absolute;
-  left: 487px;
+  left: 502px;
   top: 12%;
-  width: 50px;
+  width: 40px;
   height: 50px;
   z-index: 100;
   pointer-events: all;
@@ -522,15 +585,13 @@ p {
   font-weight: bold;
   cursor: pointer;
   text-align: right;
-  padding-right: 25%;
+  padding-right: 10px;
+  padding-left: 0px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
   pointer-events: all;
 }
 
-.exit-button:hover {
-  transform: translateX(20%);
-}
 
 .custom-dropdown {
     font-family: "DM Sans";
@@ -542,6 +603,7 @@ p {
     user-select: none;
     z-index: 1002;
     pointer-events: all;
+    background-color: transparent;
 }
 
     .custom-dropdown .selected {
@@ -549,11 +611,10 @@ p {
         width: 100%;
         padding: 0.8rem 1rem;
         border-radius: 10px;
-        background-color: #f9f9f9;
         border: 1px solid #ccc;
         font-size: 1rem;
         font-weight: 500;
-        color: #333;
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -631,13 +692,13 @@ p {
     }
 
     .custom-dropdown .options::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 1);
+        background: rgb(121, 121, 121);
         border-radius: 5px;
         transition: background 0.3s;
     }
 
     .custom-dropdown .options::-webkit-scrollbar-thumb:hover {
-        background: black;
+        background: rgb(0, 0, 0);
     }
 
     .custom-dropdown .options::-webkit-scrollbar-corner {
@@ -651,7 +712,7 @@ p {
     overflow-y: auto;
     border-top: 1px solid #b7b7b7;
     padding-top: 1rem;
-    background-color: rgba(255,255,255,0.5);
+    background-color: transparent;
     margin-top: 0.5rem;
     overflow-x: visible;
     position: relative;
@@ -674,7 +735,7 @@ p {
     }
 
     .songList::-webkit-scrollbar-thumb:hover {
-        background: black;
+        background: rgb(255, 255, 255);
     }
 
     .songList::-webkit-scrollbar-corner {
@@ -696,6 +757,7 @@ p {
         position: relative;
         width: 85%;
         margin: 0 auto;
+        background-color: rgba(255, 255, 255, 1);
     }
 
         .songList li img {
@@ -714,7 +776,6 @@ p {
   align-items: center;
   padding: 10px;
   margin-bottom: 8px;
-  background-color: rgba(240, 240, 240, 0.5);
   border-radius: 8px;
   transition: transform 0.3s ease, box-shadow 0.3s ease; 
   cursor: pointer;
@@ -848,7 +909,7 @@ p {
     width: 40px;
     height: 40px;
     border: 5px solid rgba(0,0,0,0.2);
-    border-top: 5px solid black;
+    border-top: 5px solid rgb(255, 255, 255);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 20px auto;
