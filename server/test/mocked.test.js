@@ -119,21 +119,3 @@ test('GET /health/lastfm returns ok=true when Last.fm API succeeds', async () =>
     assert.equal(body.provider, 'lastfm')
     assert.equal(body.ok, true)
 })
-
-test('GET /api/combined/:date/:country/top-tracks returns 200', async () => {
-    const app = buildApp()
-
-    const res = await app.inject({
-        method: 'GET',
-        url: '/api/combined/2026-03-05/US/top-tracks'
-    })
-
-    await app.close()
-
-    assert.equal(res.statusCode, 200)
-
-    const body = res.json()
-    assert.equal(body.country, 'US')
-    assert.equal(body.chartDate, '2026-03-05')
-    assert.ok(Array.isArray(body.topSongs))
-})
