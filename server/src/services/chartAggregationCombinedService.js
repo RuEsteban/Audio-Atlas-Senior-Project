@@ -104,7 +104,6 @@ export async function getCombinedTopTracks({
                 lastfm_points: row.source === 'lastfm' ? sourcePoints : 0,
                 combined_score: sourcePoints,
                 sources_present: [row.source],
-                source: row.source
             })
             continue
         }
