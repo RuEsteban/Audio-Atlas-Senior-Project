@@ -9,7 +9,16 @@
 	<script src="https://kit.fontawesome.com/1c8d7ba273.js" crossorigin="anonymous"></script>
 </head>
 <body>
-	<h1>Audio Atlas</h1>
+	<div id="title" class="titleText">
+		<h1>Audio Atlas</h1>
+		<p><a href="https://www.youtube.com/watch?v=Xt9xzgDL62Y" target="_blank">Info</a></p>
+	</div>
+
+	<div id="greeter">
+		<h1>Welcome to Audio Atlas</h1>
+		<p>An interactive multimedia experience taking you on a journey through the worlds top songs</p>
+		<button id="enter" class="enterButton">Click to Enter</button>
+	</div>
 
 	<div id="musicPlayer" class="player">
 		<div class="songInfo">
@@ -41,40 +50,37 @@
 		</div>
 
 		<div class="extraDetails">
-			<div class="detailsLeft">
-				<br>
-				<br>
 				<div class="volume">
 					<i class="fa-solid fa-volume-high"></i>
 					<input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1">
 				</div>
-			</div>
-			<div class="detailsRight">
-			</div>
 		</div>
 	</div>
 
-	<div id="options" class="optionContainer">
-		<p>Database Selection</p>
-		<form>
-			<label class="radio">
-				<input type="radio" name="database" value="lastfm" checked>
-				<span class="custom-radio"></span>
-				Last.fm
-			</label>
+	<div id="selectOptions">
+		<div id="toggleOptions">→</div>
+		<div id="options" class="optionContainer">
+			<p>Select a Database</p>
+			<form>
+				<label class="radio">
+					<input type="radio" name="database" value="lastfm" checked>
+					<span class="custom-radio"></span>
+					Last.fm
+				</label>
 
-			<label class="radio">
-				<input type="radio" name="database" value="spotify">
-				<span class="custom-radio"></span>
-				Spotify
-			</label>
+				<label class="radio">
+					<input type="radio" name="database" value="spotify">
+					<span class="custom-radio"></span>
+					Spotify
+				</label>
 
-			<label class="radio">
-				<input type="radio" name="database" value="aggregate">
-				<span class="custom-radio"></span>
-				Aggregate
-			</label>
-		</form>
+				<label class="radio">
+					<input type="radio" name="database" value="aggregate">
+					<span class="custom-radio"></span>
+					Aggregate
+				</label>
+			</form>
+		</div>
 	</div>
 
 	<div id="searchBar">
@@ -84,55 +90,55 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 
-	<div id="topSongs" class="info">
+
+
+	<div id="songContainer">
 		<div id="exitButton">
-			<button id="closeTopSongs" class="exit-button">x</button>
+			<button id="closeTopSongs" class="exit-button">←</button>
 		</div>
-		<div class="header">
-			<h1><span id="countryName">Country</span></h1>
-			<p>Week of:</p>
-			<!--<button id="closeTopSongs" class="exit-button">x</button>	-->
-		</div>
+		<div id="topSongs" class="info">
+			<div class="header">
+				<h1><span id="countryName">Country</span></h1>
+				<!--<button id="closeTopSongs" class="exit-button">x</button>	-->
+			</div>
 
-		<div class="custom-dropdown">
-			<div class="selected">Select Week</div>
-			<ul class="options">
-				<li data-value="2026-03-01">2026-03-01</li>
-				<li data-value="2026-03-08">2026-03-08</li>
-				<li data-value="2026-03-15">2026-03-15</li>
-			</ul>
-		</div>
+			<div class="custom-dropdown">
+				<div class="selected">Select Week</div>
+				<ul class="options">
+					<li data-value="2026-03-01">2026-03-01</li>
+					<li data-value="2026-03-08">2026-03-08</li>
+					<li data-value="2026-03-15">2026-03-15</li>
+				</ul>
+			</div>
 
-		<div id="loading" class="loading"></div>
+			<div id="loading" class="loading"></div>
 
-		<div id="songList" class="songList">
-			<ul>
-				<li>
-					<div class="song-number">1</div>
-					<img src="album1.jpg" alt="Album 1" onerror="this.onerror=null; this.src='/img/default-album.png';">
-					<div class="song-info">
-						<span class="title">Song 1</span>
-						<span class="artist">Artist A</span>
-						<span class="album-name">Album A</span>
-						<span class="year">2024</span>
-					</div>
-				</li>
-				<li>
-					<div class="song-number">2</div>
-					<img src="album2.jpg" alt="Album 2" onerror="this.onerror=null; this.src='/img/default-album.png';">
-					<div class="song-info">
-						<span class="title">Song 2</span>
-						<span class="artist">Artist B</span>
-						<span class="album-name">Album B</span>
-						<span class="year">2025</span>
-					</div>
-				</li>
-			</ul>
+			<div id="songList" class="songList">
+				<ul>
+					<li>
+						<div class="song-number">1</div>
+						<img src="album1.jpg" alt="Album 1" onerror="this.onerror=null; this.src='/img/default-album.png';">
+						<div class="song-info">
+							<span class="title">Song 1</span>
+							<span class="artist">Artist A</span>
+							<span class="album-name">Album A</span>
+							<span class="year">2024</span>
+						</div>
+					</li>
+					<li>
+						<div class="song-number">2</div>
+						<img src="album2.jpg" alt="Album 2" onerror="this.onerror=null; this.src='/img/default-album.png';">
+						<div class="song-info">
+							<span class="title">Song 2</span>
+							<span class="artist">Artist B</span>
+							<span class="album-name">Album B</span>
+							<span class="year">2025</span>
+						</div>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
-
-	
-	
 
 	<div id="container">
 		<div id="globe"></div>

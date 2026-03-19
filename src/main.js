@@ -5,7 +5,7 @@ import { Country } from "./Country.js"
 import { next } from '@vercel/edge';
 //import { build } from 'vite';
 
-//import * as THREE from 'three'
+import * as THREE from 'three'
 
 const globeContainer = document.getElementById('globe');
 
@@ -28,6 +28,9 @@ console.log("Current week:", selectedWeek);
 // selected country ISO
 let selectedCountryISO = null;
 
+const exitButton = document.getElementById("closeTopSongs");
+
+
 // search bar
 let countryFeatures = [];
 let fuse;
@@ -39,6 +42,8 @@ const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
 const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
+const songContainer = document.getElementById("songContainer");
+const toggleOptions = document.getElementById("toggleOptions");
 let loadingElement;
 
 // Globe creation
@@ -54,13 +59,20 @@ const globe = Globe()(globeContainer)
   .showAtmosphere(true)
   .atmosphereAltitude(0.2);
 
-//globe.controls().autoRotate = true;
-globe.controls().autoRotateSpeed = 0.6;
-globe.camera().position.z = 300;
+globe.controls().autoRotate = true;
+globe.controls().autoRotateSpeed = 0.3;
+globe.controls().enableZoom = false;
+globe.controls().enablePan = false;
+globe.controls().enableRotate = false;
+
+globe.width(window.innerWidth);
+globe.height(window.innerHeight);
+
+globe.polygonStrokeColor(() => 'rgba(0,0,0,0)');
 
 let hover = null;
 let highlightedCountry = null;
-const disabledCountries = ["BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
+const disabledCountries = ["AQ", "RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
 
 function selectCountry(d) {
   const audio = document.getElementById("audioPlayer");
@@ -81,8 +93,14 @@ function selectCountry(d) {
   console.log("Name:",d.properties.name);
   console.log("ISO Alpha-2:", d.properties.iso_a2);
 
-  if(d.properties.iso_a2 === "-99") {
+  if(d.properties.name == "France") {
     selectedCountryISO = "FR";
+  } else if (d.properties.name == "Norway") {
+    selectedCountryISO = "NO";
+  } else if (d.properties.name == "Somaliland"){
+    selectedCountryISO = "SO";
+  } else if (d.properties.name == "Kosovo") {
+    selectedCountryISO = "XK"; 
   } else {
     selectedCountryISO = d.properties.iso_a2;
   }
@@ -99,8 +117,11 @@ function selectCountry(d) {
   }
 
   player.classList.add("show");
-  topSongs.classList.add("show");
+  songContainer.classList.add("show");
   searchBar.classList.add("move");
+  exitButton.classList.add("show");
+  globeContainer.classList.add("select");
+  title.classList.remove("show");
 
   highlightedCountry = d.properties.iso_a2;
   globe.polygonCapColor(p => {
@@ -114,7 +135,37 @@ function selectCountry(d) {
   });
 }
 
-fetch('/custom.geo.json')
+window.addEventListener('resize', () => {
+  globe.width(window.innerWidth);
+  globe.height(window.innerHeight);
+});
+
+// enter button
+const enterButton = document.getElementById("enter");
+const greeterContainer = document.getElementById("greeter");
+const globeElement = document.getElementById("globe");
+const title = document.getElementById("title");
+
+enterButton.addEventListener("click", () => {
+  console.log("enter");
+
+  searchBar.classList.add("show");
+  optionContainer.classList.add("show");
+  greeterContainer.classList.add("hidden");
+  globeElement.classList.add("enter");
+  toggleOptions.classList.add("show");
+  
+  globe.controls().autoRotate = false;
+  globe.controls().enableZoom = true;
+  globe.controls().enablePan = true;
+  globe.controls().enableRotate = true;
+
+  setTimeout(() => {
+    title.offsetWidth; 
+    title.classList.add("show");
+  }, 500);
+
+  fetch('/custom.geo.json')
   .then(res => res.json())
   .then(data => {
     // centering upon zoom according to country data
@@ -135,7 +186,7 @@ fetch('/custom.geo.json')
     globe
       .polygonsData(countries)
       .polygonSideColor(() => 'rgba(0,0,0,0)')
-      .polygonStrokeColor(() => '#00eaff')
+      .polygonStrokeColor(() => '#00eeff')
       .polygonCapColor(d => {
         if (disabledCountries.includes(d.properties.iso_a2)) {
           return 'rgba(128,128,128,0.6)';
@@ -165,24 +216,40 @@ fetch('/custom.geo.json')
         return;
       }
 
+      console.log("countryName: " + d.properties.name);
       selectCountry(d);
     });
   });
-
-
-window.addEventListener('resize', () => {
-  globe.width([window.innerWidth]);
-  globe.height([window.innerHeight]);
 });
+
+toggleOptions.addEventListener("click", () => {
+  if (optionContainer.classList.contains("show") || !toggleOptions.classList.contains("hide")) {
+    toggleOptions.classList.remove("show");
+    toggleOptions.classList.add("hide");
+    optionContainer.classList.remove("show");
+    toggleOptions.textContent = "←";
+  } else {
+    toggleOptions.classList.add("show");
+    toggleOptions.classList.remove("hide");
+    optionContainer.classList.add("show");
+    toggleOptions.textContent = "→";
+  }
+});
+
 
 document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
-    const exitButton = document.getElementById("closeTopSongs");
     exitButton.addEventListener("click", () => {
         audio.pause();
         player.classList.remove("show");
-        topSongs.classList.remove("show");
+        player.classList.remove("play");
+        songContainer.classList.remove("show");
         searchBar.classList.remove("move");
+        exitButton.classList.remove("show");
+        globeContainer.classList.remove("select");
+        title.classList.add("show");
+
+        highlightedCountry = null;
     });
 
     loadingElement = document.getElementById("loading");
@@ -196,6 +263,23 @@ document.addEventListener("DOMContentLoaded", () => {
             if (selectedCountryISO) {
               fetchTopSongs(selectedCountryISO);
             }
+
+            if(selectedDatabase === "lastfm") {
+              options.classList.add("lastfm");
+              options.classList.remove("spotify");
+              options.classList.remove("agg"); 
+            }
+            else if(selectedDatabase === "spotify") {
+              options.classList.add("spotify");
+              options.classList.remove("lastfm");
+              options.classList.remove("agg");
+            }
+            else {
+              options.classList.remove("spotify");
+              options.classList.remove("lastfm");
+              options.classList.add("agg");
+            }
+
         });
     });
 
@@ -216,24 +300,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
-            optionsList.style.display = optionsList.style.display === "block" ? "none" : "block";
+            if(!selected.classList.contains("open")){
+              selected.classList.add("open");
+              optionsList.classList.add("show");
+            } else {
+              selected.classList.remove("open");
+              optionsList.classList.remove("show");
+            }
         });
 
         optionsList.querySelectorAll("li").forEach(option => {
             option.addEventListener("click", () => {
                 selected.textContent = option.textContent;
-                optionsList.style.display = "none";
                 selectedWeek = option.getAttribute("data-value");
                 console.log("Selected week:", selectedWeek);
                 if (selectedCountryISO) {
                   fetchTopSongs(selectedCountryISO);
                 } 
+                selected.classList.remove("open");
+                optionsList.classList.remove("show");
             });
         });
 
         document.addEventListener("click", e => {
             if (!dropdown.contains(e.target)) {
-                optionsList.style.display = "none";
+                selected.classList.remove("open");
+                optionsList.classList.remove("show");
             }
         });
     }
@@ -260,10 +352,12 @@ document.addEventListener("DOMContentLoaded", () => {
     playButton.addEventListener("click", () => {
         if (audio.paused) {
             audio.play();
+            player.classList.add("play");
             playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
         }
         else {
             audio.pause();
+            player.classList.remove("play");
             playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
     });
@@ -294,6 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
       playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
       timelineBar.style.width = "0%";
       currentTime.textContent = "0:00";
+      player.classList.remove("play");
     });
 
     barContainer.addEventListener("click", (e) => {
@@ -317,6 +412,7 @@ async function audioPreview(title, artist) {
         audio.src = usedAudios.get(search);
         audio.currentTime = 0;
         audio.play();
+        player.classList.add("play");
         return;
       }
 
@@ -445,7 +541,8 @@ function playSong(index) {
 
   currSong = index;
 
-  document.getElementById("songName").textContent = truncateText(song.track_name || "Unknown");
+  document.getElementById("songName").innerHTML =
+  `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
   document.getElementById("artistName").textContent = truncateText(song.artist_name || "Unknown");
   document.getElementById("albumName").textContent = 
   `${truncateText(song.album_name || "Unknown")} (${truncateText(song.release_year || "Unknown")})`;
@@ -462,6 +559,8 @@ function playSong(index) {
   audioPreview(song.track_name, song.artist_name);
 
   playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+  player.classList.add("play");
 }
 
 function nextSong() {
@@ -512,7 +611,6 @@ function populateSongList(songs) {
       <div class="song-info">
         <span class="title">${truncateText(track_name)}</span>
         <span class="artist">${truncateText(artist_name)}</span>
-        <span class="album">${truncateText(album_name)} (${truncateText(release_year)})</span>
       </div>
     `;
 
@@ -525,7 +623,8 @@ function populateSongList(songs) {
     if (index === 0) {
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = truncateText(song.track_name);
+      document.getElementById("songName").innerHTML =
+        `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
       document.getElementById("artistName").textContent = truncateText(song.artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
@@ -540,7 +639,8 @@ function populateSongList(songs) {
 
       li.classList.add("selected-song");
 
-      document.getElementById("songName").textContent = truncateText(track_name);
+      document.getElementById("songName").innerHTML =
+        `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
       document.getElementById("artistName").textContent = truncateText(artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(album_name)} (${truncateText(release_year)})`;
