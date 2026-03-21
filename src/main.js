@@ -211,7 +211,7 @@ enterButton.addEventListener("click", () => {
     .onPolygonClick(d => {
       if (disabledCountries.includes(d.properties.iso_a2)) {
         const name = d.properties.name;
-        alert(`No music available for ${d.properties.name}`);
+        showMsg(`No data available for ${d.properties.name}`);
 
         return;
       }
@@ -404,7 +404,7 @@ async function audioPreview(title, artist) {
       // http get request sent, retrieves song data
       const search = encodeURIComponent(`${title} ${artist}`);
       const audio = document.getElementById("audioPlayer");
-      let country = "us";
+      const markets = ["us", selectedCountryISO?.toLowerCase()];
 
       if (usedAudios.has(search)) {
         audio.src = usedAudios.get(search);
@@ -414,29 +414,53 @@ async function audioPreview(title, artist) {
         return;
       }
 
-      const res = await fetch(
-      `https://itunes.apple.com/search?term=${search}&entity=song&limit=1&country=${country}`
-      );
+      let previewUrl = null;
 
-      const data = await res.json();
+      for (let country of markets) {
+        const res = await fetch(
+        `https://itunes.apple.com/search?term=${search}&entity=song&limit=1&country=${country}`
+        );
 
-      if (!data.results.length || !data.results[0].previewUrl) {
-          console.log("No preview");
+        const data = await res.json();
+
+        if (data.results.length && data.results[0].previewUrl) {
+            previewUrl = data.results[0].previewUrl;
+            break;
+        }
+      }
+
+      if (!previewUrl) {
+          console.log("No audio preview available");
+          // make sure it doesnt play the last fetched song
+          audio.pause();
+          playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+          showMsg("No preview for this song");
           return;
       }
 
       // extract URL
-      const previewUrl = data.results[0].previewUrl;
       usedAudios.set(search, previewUrl);
       audio.src = previewUrl;
       audio.currentTime = 0;
       audio.play();
 
       playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      player.classList.add("play");
 
       } catch (error) {
           console.error("Fetch error:", error);
       }
+}
+
+function showMsg(message) {
+  const popUp = document.getElementById("popUp");
+
+  popUp.textContent = message;
+  popUp.classList.add("show");
+
+  setTimeout(() => {
+    popUp.classList.remove("show");
+  }, 2000);
 }
 
 function getCurrentWeek() {
@@ -534,6 +558,17 @@ function playSong(index) {
   if (!topSongsArray) {
     return;
   }
+
+  const audio = document.getElementById("audioPlayer");
+  const timelineBar = document.getElementById("timelineBar");
+  const currentTime = document.getElementById("currentTime");
+  const fullTime = document.getElementById("fullTime");
+
+  audio.pause();
+  audio.currentTime = 0;
+  timelineBar.style.width = "0%";
+  currentTime.textContent = "0:00";
+  fullTime.textContent = "0:30";
 
   const song = topSongsArray[index];
 
