@@ -44,6 +44,9 @@ const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
 const songContainer = document.getElementById("songContainer");
 const toggleOptions = document.getElementById("toggleOptions");
+const infoPageButton = document.getElementById("info-page-button");
+const infoPage = document.getElementById("info-page");
+const closeInfoButton = document.getElementById("closeInfoButton");
 let loadingElement;
 
 // Globe creation
@@ -220,6 +223,14 @@ enterButton.addEventListener("click", () => {
       selectCountry(d);
     });
   });
+});
+
+infoPageButton.addEventListener("click", () => {
+  infoPage.classList.add("show");
+});
+
+closeInfoButton.addEventListener("click", () => {
+  infoPage.classList.remove("show");
 });
 
 toggleOptions.addEventListener("click", () => {
@@ -595,7 +606,7 @@ function populateSongList(songs) {
 
     let ext_url = song.external_url || "#";
     let img_url = song.image_url || '/img/vinyl-icon.webp';
-    let rank = song.rank || "-";
+    let rank = song.rank || song.aggregate_rank || "-";
     let track_name = song.track_name || "Unknown";
     let artist_name = song.artist_name || "Unknown";
     let album_name = song.album_name || "Unknown";
@@ -603,9 +614,13 @@ function populateSongList(songs) {
 
     li.innerHTML = `
       <div class="song-number">${truncateText(rank)}</div>
-      <a href="${ext_url}" target="_blank" class="album-link">
-        <img src="${img_url}" alt="Album" />
-      </a>
+      ${
+        song.external_url
+          ? `<a href="${song.external_url}" target="_blank" class="album-link">
+              <img src="${img_url}" alt="Album" />
+            </a>`
+          : `<img src="${img_url}" alt="Album" class="album-link disabled" />`
+      }
       <div class="song-info">
         <span class="title">${truncateText(track_name)}</span>
         <span class="artist">${truncateText(artist_name)}</span>
