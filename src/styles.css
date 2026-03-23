@@ -1017,3 +1017,28 @@ p {
     transform: scale(1.2);
     color: rgb(0, 0, 0);
 }
+
+.popUpMsg {
+  position: fixed;
+  bottom: 350px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-family: "DM Sans";
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+
+  z-index: 5000;
+}
+
+.popUpMsg.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-100%);
+}
