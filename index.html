@@ -22,7 +22,7 @@
 
 	<div id="info-page">
 		<div class="info-content">
-			<div id="closeInfoButton">x</div>
+			<div id="closeInfoButton">ⓧ</div>
 			<h2>About Audio Atlas</h2>
 			<p>Audio Atlas was created to provide an immersive and educational experience into the global music scene, allowing users to explore and discover top songs from different countries and cultures.</p>
 			<h2>How to Use</h2>
@@ -37,7 +37,7 @@
 			<h2>Credits</h2>
 			<p>Developed by Lance Daley, Ruperto Esteban, Rachel Gadonniex, and Hunter Stewart.</p>
 			<p>Special thanks to our advisor Dr. Schmer-Galunder</p>
-			<p>Chart data sourced from Last.fm, and Spotify through Kworb. Music playback provided by iTunes.</p>
+			<p>Chart data sourced from Last.fm and Spotify through Kworb. Music playback provided by iTunes.</p>
 			<i>Audio Atlas is not monetized. Music playback is only for educational and research purposes only. Audio Atlas does not claim ownership of any music, data, or art.</i>
 			<p>Audio Atlas recognizes the ethical concerns within music streaming services, and does not condone or support unethical practices within the music industry. We encourage users to support artists directly by purchasing music and merchandise, attending concerts, and using ethical streaming services.</p>
 		</div>
@@ -82,28 +82,13 @@
 	</div>
 
 	<div id="selectOptions">
-		<div id="toggleOptions">☰</div>
-		<div id="options" class="optionContainer">
-			<p>Select a Database</p>
-			<form>
-				<label class="radio">
-					<input type="radio" name="database" value="lastfm" checked>
-					<span class="custom-radio"></span>
-					Last.fm
-				</label>
-
-				<label class="radio">
-					<input type="radio" name="database" value="spotify">
-					<span class="custom-radio"></span>
-					Spotify
-				</label>
-
-				<label class="radio">
-					<input type="radio" name="database" value="aggregate">
-					<span class="custom-radio"></span>
-					Aggregate
-				</label>
-			</form>
+		<div class="custom-dropdown" id="databaseDropdown">
+			<div class="selected">Select a database</div>
+			<ul class="options">
+				<li data-value="lastfm">Last.fm</li>
+				<li data-value="spotify">Spotify</li>
+				<li data-value="aggregate">Aggregate</li>
+			</ul>
 		</div>
 	</div>
 
@@ -113,8 +98,6 @@
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-
-
 
 	<div id="songContainer">
 		<div id="exitButton">←</div>

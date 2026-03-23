@@ -152,6 +152,7 @@ p {
     flex: 1;
     min-width: 0;
     margin-right: 1vh;
+    margin-top: 5px;
     overflow: hidden;
     padding-left: 1%;
     width: 20%;
@@ -287,56 +288,60 @@ p {
     font-size: 1rem;
 }
 
-#toggleOptions {
+#selectOptions {
     position: absolute;
-    top: 50px;
-    right: 200px;
-    width: 25px;
-    height: 28px;
-    line-height: normal;
-    padding-left: 10px;
-    padding-right: 0px;
-    border-top-left-radius: 25%;
-    border-bottom-left-radius: 25%;
-    text-align: left;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    padding-top: 5px;
-    padding-bottom: 3px;
-    z-index: 100;
-    background-color: rgb(0, 0, 0);
-    outline: white solid 1px;
-    font-size: 1.2rem;
+    top: 10px;
+    right: 10px;
+    width: 200px;
+    z-index: 1000;
+    padding: 1vh 1.6vh;
+    font-size: 1.6vh;
+    border: none;
+    opacity: 0;
+    transition: all 1s ease;
+    border-radius: 25%;
+}
+
+#selectOptions.show {
+    opacity: 1;
+}
+
+#selectOptions .custom-dropdown {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6);
     cursor: pointer;
-    user-select: none;
-    transform: translateX(1000%);
-    transition: all 0.2s ease;
+    border-radius: 25% / 10%;
 }
 
-#toggleOptions:hover {
-   padding-right: 10px;
+#selectOptions .custom-dropdown .selected {
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    box-shadow: none;
+    cursor: pointer;
 }
 
-#toggleOptions.show {
-    transform: translateX(0%);
+#selectOptions .custom-dropdown.spotify {
+    box-shadow: 0px 0px 15px rgba(0, 145, 19, 0.6);
 }
 
-#toggleOptions.hide {
-    transform: translateX(200px);
-    padding-right: 0px;
-    transition: all 0.3s ease;
+#selectOptions .custom-dropdown.lastfm {
+    box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.6);
 }
 
-#toggleOptions.hide:hover {
-    transform: translateX(200px);
-    padding-right: 10px;
+#selectOptions .custom-dropdown.agg {
+    box-shadow: 0px 0px 15px rgba(12, 206, 255, 0.6);
 }
 
 #options {
-    background-color: rgb(255, 0, 0);
+    background-color: rgba(0, 0, 0, 0.8);
     font-family: "DM Sans";
     width: 200px;
-    height: 225px;
+    height: 235px;
     position: absolute;
     top: 10px;
     right: 2px;
@@ -348,31 +353,26 @@ p {
     transition: all 0.4s ease;
     transform: translateX(120%);
     visibility: hidden;
+    color:white;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.6);
 }
 
 #options.lastfm {
-    background-color: rgb(255, 0, 0);
+    box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.6);
 }
 
 #options.spotify {
-    background-color: rgb(30, 215, 96);
+    box-shadow: 0px 0px 10px rgba(0, 145, 19, 0.6);
 }
 
 #options.agg {
-    background-color: rgb(19, 220, 255);
+    box-shadow: 0px 0px 10px rgba(12, 206, 255, 0.6);
 }
 
 #options.show {
     transform: translateX(0%);
     visibility: visible;
 }
-
-    #options p {
-        font-family: "DM Sans";
-        font-weight: 1000;
-        margin-bottom: 20px;
-    }
 
 .volume {
     display: flex;
@@ -393,7 +393,7 @@ p {
 }
 
 #options p {
-    color: black;
+    color: rgb(255, 255, 255);
     margin: 0 0 1vh 0;
     text-decoration: underline;
     font-size: 1.3rem;
@@ -415,7 +415,7 @@ p {
 .custom-radio {
     width: 1.1rem;
     height: 1.1rem;
-    border: 3px solid black;
+    border: 3px solid rgb(255, 255, 255);
     border-radius: 50%;
     margin-right: 1rem;
     position: relative;
@@ -426,7 +426,7 @@ p {
     content: "";
     width: 75%;
     height: 75%;
-    background: black;
+    background: rgb(255, 255, 255);
     border-radius: 50%;
     position: absolute;
     top: 50%;
@@ -971,10 +971,11 @@ p {
     background-color: rgba(202, 202, 202, 1);
     padding: 2rem;
     border-radius: 10px;
-    max-width: 1000px;
+    width: 1000px;
     height: 650px;
     text-align: center;
     font-family: 'DM Sans';
+    position: relative;
 }
 
 .info-content h2 {
@@ -1001,21 +1002,23 @@ p {
 
 #closeInfoButton {
     position: absolute;
-    top: 40px;
-    right: 280px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: rgb(43, 43, 43);
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
     cursor: pointer;
-    transition: color 0.3s ease;
-    border-radius: 25%;
-    padding: 0.2rem 0.5rem;
     transition: all 0.2s ease;
 }
-
 #closeInfoButton:hover {
-    transform: scale(1.2);
-    color: rgb(0, 0, 0);
+    transform: scale(1.25);
+    color: rgb(255, 0, 0);
 }
 
 .popUpMsg {
