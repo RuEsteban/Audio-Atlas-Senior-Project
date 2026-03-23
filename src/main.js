@@ -19,7 +19,7 @@ let currSong = 0;
 let fetchURL = "https://audio-atlas-senior-project.onrender.com/api";
 
 // database string
-let selectedDatabase = "lastfm";
+let selectedDatabase = null;
 
 // week string, default current week  
 let selectedWeek = getCurrentWeek();
@@ -40,13 +40,12 @@ const searchBar = document.getElementById("searchBar");
 
 const countryName = document.getElementById("countryName");
 const player = document.getElementById("musicPlayer");
-const optionContainer = document.getElementById("options");
 const topSongs = document.getElementById("topSongs");
 const songContainer = document.getElementById("songContainer");
-const toggleOptions = document.getElementById("toggleOptions");
 const infoPageButton = document.getElementById("info-page-button");
 const infoPage = document.getElementById("info-page");
 const closeInfoButton = document.getElementById("closeInfoButton");
+const selectOptions = document.getElementById("selectOptions");
 let loadingElement;
 
 // Globe creation
@@ -153,10 +152,10 @@ enterButton.addEventListener("click", () => {
   console.log("enter");
 
   searchBar.classList.add("show");
-  optionContainer.classList.add("show");
   greeterContainer.classList.add("hidden");
   globeElement.classList.add("enter");
-  toggleOptions.classList.add("show");
+  selectOptions.classList.add("show");
+  infoPage.classList.add("show");
   
   globe.controls().autoRotate = false;
   globe.controls().enableZoom = true;
@@ -233,18 +232,6 @@ closeInfoButton.addEventListener("click", () => {
   infoPage.classList.remove("show");
 });
 
-toggleOptions.addEventListener("click", () => {
-  if (optionContainer.classList.contains("show") || !toggleOptions.classList.contains("hide")) {
-    toggleOptions.classList.remove("show");
-    toggleOptions.classList.add("hide");
-    optionContainer.classList.remove("show");
-  } else {
-    toggleOptions.classList.add("show");
-    toggleOptions.classList.remove("hide");
-    optionContainer.classList.add("show");
-  }
-});
-
 
 document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
@@ -264,36 +251,58 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingElement = document.getElementById("loading");
 
     // Database selector
-    const radios = document.querySelectorAll('input[name="database"]');
-    radios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            selectedDatabase = radio.value;
-            console.log("Selected database:", selectedDatabase);
-            if (selectedCountryISO) {
-              fetchTopSongs(selectedCountryISO);
-            }
+    const dbDropdown = document.getElementById("databaseDropdown");
 
-            if(selectedDatabase === "lastfm") {
-              options.classList.add("lastfm");
-              options.classList.remove("spotify");
-              options.classList.remove("agg"); 
-            }
-            else if(selectedDatabase === "spotify") {
-              options.classList.add("spotify");
-              options.classList.remove("lastfm");
-              options.classList.remove("agg");
-            }
-            else {
-              options.classList.remove("spotify");
-              options.classList.remove("lastfm");
-              options.classList.add("agg");
-            }
+    if (dbDropdown) {
+      const selected = dbDropdown.querySelector(".selected");
+      const optionsList = dbDropdown.querySelector(".options");
 
+      selectedDatabase = null;
+
+      selected.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        selected.classList.toggle("open");
+        optionsList.classList.toggle("show");
+      });
+
+      optionsList.querySelectorAll("li").forEach(option => {
+        option.addEventListener("click", () => {
+          selected.textContent = option.textContent;
+          selectedDatabase = option.getAttribute("data-value");
+
+          console.log("Selected database:", selectedDatabase);
+
+          dbDropdown.classList.remove("spotify", "lastfm", "agg");
+
+          if (selectedDatabase === "spotify") {
+            dbDropdown.classList.add("spotify");
+          } else if (selectedDatabase === "lastfm") {
+            dbDropdown.classList.add("lastfm");
+          } else if (selectedDatabase === "aggregate") {
+            dbDropdown.classList.add("agg");
+          }
+
+          if (selectedCountryISO) {
+            fetchTopSongs(selectedCountryISO);
+          }
+
+          selected.classList.remove("open");
+          optionsList.classList.remove("show");
         });
-    });
+      });
+
+      // Close dropdown on outside click
+      document.addEventListener("click", (e) => {
+        if (!dbDropdown.contains(e.target)) {
+          selected.classList.remove("open");
+          optionsList.classList.remove("show");
+        }
+      });
+    }
 
     // Week selector (custom dropdown)
-    const dropdown = document.querySelector(".custom-dropdown");
+    const dropdown = document.querySelector("#topSongs .custom-dropdown");
     if (dropdown) {
         const selected = dropdown.querySelector(".selected");
         const optionsList = dropdown.querySelector(".options");
@@ -305,7 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Set displayed selected week
         const [year, month, day] = selectedWeek.split("-").map(Number);
         selected.textContent = formatDateForDisplay(new Date(year, month - 1, day));
-
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
@@ -357,19 +365,19 @@ document.addEventListener("DOMContentLoaded", () => {
       audio.volume = volumeBar.value;
     });
 
-    // play or pause button
-    playButton.addEventListener("click", () => {
-        if (audio.paused) {
-            audio.play();
-            player.classList.add("play");
-            playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        }
-        else {
-            audio.pause();
-            player.classList.remove("play");
-            playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
-        }
-    });
+  // play or pause button
+  playButton.addEventListener("click", () => {
+    if (audio.paused) {
+      player.classList.add("play");
+      audio.play();
+      playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    }
+    else {
+      audio.pause();
+      player.classList.remove("play");
+      playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+    }
+  });
 
     nextButton.addEventListener("click", nextSong);
     backButton.addEventListener("click", prevSong);
@@ -603,8 +611,6 @@ function playSong(index) {
   audioPreview(song.track_name, song.artist_name);
 
   playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
-
-  player.classList.add("play");
 }
 
 function nextSong() {
