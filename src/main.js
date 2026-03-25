@@ -17,6 +17,9 @@ const globeContainer = document.getElementById('globe');
 let currCountry = null;
 let topSongsArray =  null;
 let currSong = 0;
+let playbackMode = "off";
+const audio = document.getElementById("audioPlayer");
+const playButton = document.getElementById("playButton");
 
 //string to build fetch url
 // example: https://audio-atlas-senior-project.onrender.com/api/lastfm/2026-03-01/US/top-tracks
@@ -81,7 +84,6 @@ let highlightedCountry = null;
 const disabledCountries = ["AQ", "RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
 
 function selectCountry(d) {
-  const audio = document.getElementById("audioPlayer");
   audio.pause();
   audio.currentTime = 0;
   currSong = 0;
@@ -92,7 +94,7 @@ function selectCountry(d) {
   // reset currsong index
 
   if (!selectedDatabase) {
-    alert("Please select a database first.");
+    showMsg("Please select a database first");
     return;
   }
 
@@ -281,10 +283,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (selectedDatabase === "spotify") {
             dbDropdown.classList.add("spotify");
+            globe
+              .atmosphereColor('#4be76f');
           } else if (selectedDatabase === "lastfm") {
             dbDropdown.classList.add("lastfm");
+            globe
+              .atmosphereColor('rgba(255, 0, 0, 0.6)');
           } else if (selectedDatabase === "aggregate") {
             dbDropdown.classList.add("agg");
+            globe
+              .atmosphereColor('rgba(12, 206, 255, 0.6)');
           }
 
           if (selectedCountryISO) {
@@ -295,10 +303,37 @@ document.addEventListener("DOMContentLoaded", () => {
           optionsList.classList.remove("show");
         });
       });
+    }
+
+      const pbDropdown = document.getElementById("playbackDropdown");
+
+      if (pbDropdown) {
+      const selected = pbDropdown.querySelector(".selected");
+      const optionsList = pbDropdown.querySelector(".options");
+
+      selected.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        selected.classList.toggle("open");
+        optionsList.classList.toggle("show");
+      });
+
+      optionsList.querySelectorAll("li").forEach(option => {
+        option.addEventListener("click", () => {
+          playbackMode = option.getAttribute("data-value");
+
+          selected.textContent = `Playback: ${option.textContent}`;
+
+          console.log("Playback mode:", playbackMode);
+
+          selected.classList.remove("open");
+          optionsList.classList.remove("show");
+        });
+      });
 
       // Close dropdown on outside click
       document.addEventListener("click", (e) => {
-        if (!dbDropdown.contains(e.target)) {
+        if (!pbDropdown.contains(e.target)) {
           selected.classList.remove("open");
           optionsList.classList.remove("show");
         }
@@ -344,15 +379,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.addEventListener("click", e => {
-            if (!dropdown.contains(e.target)) {
+            if (dbDropdown && !dropdown.contains(e.target)) {
                 selected.classList.remove("open");
                 optionsList.classList.remove("show");
             }
         });
     }
     // connect to audio
-    const audio = document.getElementById("audioPlayer");
-    const playButton = document.getElementById("playButton");
     const backButton = document.getElementById("backButton");
     const nextButton = document.getElementById("nextButton");
     const volumeBar = document.getElementById("volumeBar");
@@ -371,9 +404,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // play or pause button
   playButton.addEventListener("click", () => {
+    if (!topSongsArray || topSongsArray.length === 0) {
+      return;
+    }
+
+    const song = topSongsArray[currSong];
     if (audio.paused) {
+      if (!audio.srcc || audio.src === "") {
+        audioPreview(song.track_name, song.artist_name);
+      }
+      else {
+        audio.play();
+      }
       player.classList.add("play");
-      audio.play();
       playButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
     }
     else {
@@ -405,6 +448,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("ended", () => {
+      if (playbackMode === "loop") {
+        playSong(currSong);
+        return;
+      }
+
+      if (playbackMode === "autoplay") {
+        nextSong();
+        return;
+      }
+
+      // off mode
       audio.currentTime = 0;
       playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
       timelineBar.style.width = "0%";
@@ -426,7 +480,6 @@ async function audioPreview(title, artist) {
   try {
       // http get request sent, retrieves song data
       const search = encodeURIComponent(`${title} ${artist}`);
-      const audio = document.getElementById("audioPlayer");
       const markets = ["us", selectedCountryISO?.toLowerCase()];
 
       if (usedAudios.has(search)) {
@@ -563,7 +616,7 @@ async function fetchTopSongs(countryISO) {
 
       populateSongList(topSongsArray);
       currSong = 0;
-      playSong(0);
+      loadSong(0);
       hideLoading();
     })
     .catch(error => {
@@ -577,21 +630,10 @@ function truncateText(text) {
   return text.length > 30 ? text.slice(0, 30) + "…" : text;
 }
 
-function playSong(index) {
+function loadSong(index) {
   if (!topSongsArray) {
     return;
   }
-
-  const audio = document.getElementById("audioPlayer");
-  const timelineBar = document.getElementById("timelineBar");
-  const currentTime = document.getElementById("currentTime");
-  const fullTime = document.getElementById("fullTime");
-
-  audio.pause();
-  audio.currentTime = 0;
-  timelineBar.style.width = "0%";
-  currentTime.textContent = "0:00";
-  fullTime.textContent = "0:30";
 
   const song = topSongsArray[index];
 
@@ -609,8 +651,22 @@ function playSong(index) {
 
   const items = document.querySelectorAll("#songList li");
   if (items[index]) {
+    items[index].scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
     items[index].classList.add("selected-song");
   }
+}
+
+function playSong(index) {
+  if (!topSongsArray) {
+    return;
+  }
+
+  const song = topSongsArray[index];
+
+  loadSong(index);
 
   audioPreview(song.track_name, song.artist_name);
 
