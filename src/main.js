@@ -510,7 +510,11 @@ async function audioPreview(title, artist) {
           // make sure it doesnt play the last fetched song
           audio.pause();
           playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
-          showMsg("No preview for this song");
+          showMsg("No audio preview available");
+          audio.currentTime = 0;
+          timelineBar.style.width = "0%";
+          currentTime.textContent = "0:00";
+          player.classList.remove("play");
           return;
       }
 
