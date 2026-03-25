@@ -2,6 +2,7 @@
   "private": true,
   "dependencies": {
     "@turf/turf": "^7.3.4",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/edge": "^0.1.2",
     "globe.gl": "^2.45.0",
     "three": "^0.182.0"

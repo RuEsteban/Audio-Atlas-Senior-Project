@@ -6,6 +6,10 @@ import { next } from '@vercel/edge';
 //import { build } from 'vite';
 
 import * as THREE from 'three'
+import { inject } from '@vercel/analytics'
+
+// Initialize Vercel Analytics
+inject();
 
 const globeContainer = document.getElementById('globe');
 
