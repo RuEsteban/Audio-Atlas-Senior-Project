@@ -6,10 +6,10 @@ import { next } from '@vercel/edge';
 //import { build } from 'vite';
 
 import * as THREE from 'three'
-import { inject } from '@vercel/analytics'
+//import { inject } from '@vercel/analytics'
 
 // Initialize Vercel Analytics
-inject();
+//inject();
 
 const globeContainer = document.getElementById('globe');
 
@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
           } else if (selectedDatabase === "lastfm") {
             dbDropdown.classList.add("lastfm");
             globe
-              .atmosphereColor('rgba(255, 0, 0, 0.6)');
+              .atmosphereColor('rgba(144, 0, 255, 0.6)');
           } else if (selectedDatabase === "aggregate") {
             dbDropdown.classList.add("agg");
             globe
@@ -721,7 +721,7 @@ function populateSongList(songs) {
       <div class="song-number">${truncateText(rank)}</div>
       ${
         song.external_url
-          ? `<a href="${song.external_url}" target="_blank" class="album-link">
+          ? `<a href="${ext_url}" target="_blank" class="album-link">
               <img src="${img_url}" alt="Album" />
             </a>`
           : `<img src="${img_url}" alt="Album" class="album-link disabled" />`
@@ -742,10 +742,10 @@ function populateSongList(songs) {
       li.classList.add("selected-song");
 
       document.getElementById("songName").innerHTML =
-        `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
-      document.getElementById("artistName").textContent = truncateText(song.artist_name);
+        `<a href="${ext_url}" target="_blank">${truncateText(track_name || "Unknown")}</a>`;
+      document.getElementById("artistName").textContent = truncateText(artist_name);
       document.getElementById("albumName").textContent =
-        `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+        `${truncateText(album_name)} (${truncateText(release_year)})`;
     }
 
     li.addEventListener("click", () => {
@@ -758,7 +758,7 @@ function populateSongList(songs) {
       li.classList.add("selected-song");
 
       document.getElementById("songName").innerHTML =
-        `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name || "Unknown")}</a>`;
+        `<a href="${ext_url}" target="_blank">${truncateText(track_name || "Unknown")}</a>`;
       document.getElementById("artistName").textContent = truncateText(artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(album_name)} (${truncateText(release_year)})`;
