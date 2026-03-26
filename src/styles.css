@@ -1058,7 +1058,9 @@ p {
 .info-content h2 {
     margin-top: 0;
     margin-bottom: 0;
-    color: rgb(255, 255, 255)
+    color: rgb(255, 255, 255);
+    text-decoration: underline;
+    text-decoration-thickness: 0.1rem;
 }
 
 .info-content p {
