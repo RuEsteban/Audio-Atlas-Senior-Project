@@ -701,7 +701,7 @@ function populateSongList(songs) {
 
   if (!songs || songs.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "No songs found for this country and week within this database.";
+    li.innerHTML = "No songs found for this country and week within this database.<br>Try selecting a previous week or an alternative database.";
     songList.appendChild(li);
     return;
   }
