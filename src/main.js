@@ -6,10 +6,10 @@ import { next } from '@vercel/edge';
 //import { build } from 'vite';
 
 import * as THREE from 'three'
-//import { inject } from '@vercel/analytics'
+import { inject } from '@vercel/analytics'
 
 // Initialize Vercel Analytics
-//inject();
+inject();
 
 const globeContainer = document.getElementById('globe');
 
@@ -53,6 +53,8 @@ const infoPageButton = document.getElementById("info-page-button");
 const infoPage = document.getElementById("info-page");
 const closeInfoButton = document.getElementById("closeInfoButton");
 const selectOptions = document.getElementById("selectOptions");
+const aggInfo = document.getElementById("aggInfo");
+let aggWeights = document.getElementById("weights");
 let loadingElement;
 
 // Globe creation
@@ -270,6 +272,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selected.classList.toggle("open");
         optionsList.classList.toggle("show");
+        if(aggInfo.classList.contains("show")){
+          aggInfo.classList.remove("show");
+        }
+        if(selectedDatabase === "aggregate" && !optionsList.classList.contains("show")){
+          aggInfo.classList.add("show");
+        }
       });
 
       optionsList.querySelectorAll("li").forEach(option => {
@@ -293,6 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
             dbDropdown.classList.add("agg");
             globe
               .atmosphereColor('rgba(12, 206, 255, 0.6)');
+            aggInfo.classList.add("show");
           }
 
           if (selectedCountryISO) {
@@ -316,6 +325,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selected.classList.toggle("open");
         optionsList.classList.toggle("show");
+        if(selectedDatabase === "aggregate" && !optionsList.classList.contains("show")){
+          aggInfo.classList.add("show");
+        }
       });
 
       optionsList.querySelectorAll("li").forEach(option => {
@@ -609,8 +621,6 @@ async function fetchTopSongs(countryISO) {
   let buildURL = `${fetchURL}/${selectedDatabase}/${selectedWeek}/${countryISO}/top-tracks`;
   console.log("Fetch URL:", buildURL);
 
-  
-
   fetch(buildURL)
     .then(response => response.json())
     .then(data => {
@@ -717,56 +727,69 @@ function populateSongList(songs) {
     let album_name = song.album_name || "Unknown";
     let release_year = song.release_year || "Unknown";
 
+    let spotify_rank = song.spotify_rank;
+    let lastfm_rank = song.lastfm_rank;
+
+    let spotify_weight = +(song.spotify_points / song.combined_score).toFixed(3);
+    let lastfm_weight = +(song.lastfm_points / song.combined_score).toFixed(3);
+
     li.innerHTML = `
       <div class="song-number">${truncateText(rank)}</div>
-      ${
-        song.external_url
-          ? `<a href="${ext_url}" target="_blank" class="album-link">
-              <img src="${img_url}" alt="Album" />
-            </a>`
-          : `<img src="${img_url}" alt="Album" class="album-link disabled" />`
+      ${song.external_url
+        ? `<a href="${ext_url}" target="_blank" class="album-link">
+               <img src="${img_url}" alt="Album" />
+             </a>`
+        : `<img src="${img_url}" alt="Album" class="album-link disabled" />`
       }
       <div class="song-info">
         <span class="title">${truncateText(track_name)}</span>
         <span class="artist">${truncateText(artist_name)}</span>
       </div>
+      <div class="song-ranks-container"></div> <!-- placeholder for ranks -->
     `;
 
     const link = li.querySelector(".album-link");
-      link.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+    link.addEventListener("click", (e) => e.stopPropagation());
 
+    const selectSong = () => {
+      document.querySelectorAll("#songList li").forEach(item => {
+        item.classList.remove("selected-song");
+        const ranksContainer = item.querySelector(".song-ranks-container");
+        if (ranksContainer) ranksContainer.innerHTML = "";
+      });
 
-    if (index === 0) {
       li.classList.add("selected-song");
 
       document.getElementById("songName").innerHTML =
-        `<a href="${ext_url}" target="_blank">${truncateText(track_name || "Unknown")}</a>`;
+        `<a href="${ext_url}" target="_blank">${truncateText(track_name)}</a>`;
       document.getElementById("artistName").textContent = truncateText(artist_name);
       document.getElementById("albumName").textContent =
         `${truncateText(album_name)} (${truncateText(release_year)})`;
-    }
 
-    li.addEventListener("click", () => {
-      document.querySelectorAll("#songList li").forEach(item =>
-        item.classList.remove("selected-song")
-      );
+      if (selectedDatabase === "aggregate") {
+        const ranksContainer = li.querySelector(".song-ranks-container");
+        ranksContainer.innerHTML = `
+          ${spotify_rank ? `<div class="spotify-rank"><span class="rank-label">Spotify: </span>#${spotify_rank}</div>` : ""}
+          ${lastfm_rank ? `<div class="lastfm-rank"><span class="rank-label">Last.fm: </span>#${lastfm_rank}</div>` : ""}
+        `;
+
+        aggWeights.innerHTML = `
+          <p><strong>Database Weights:</strong></p>
+          <p>Spotify: ${0.5 || "N/A"}</p>
+          <p>Last.fm: ${0.5 || "N/A"}</p>
+        `;
+      }
 
       currSong = index;
-
-      li.classList.add("selected-song");
-
-      document.getElementById("songName").innerHTML =
-        `<a href="${ext_url}" target="_blank">${truncateText(track_name || "Unknown")}</a>`;
-      document.getElementById("artistName").textContent = truncateText(artist_name);
-      document.getElementById("albumName").textContent =
-        `${truncateText(album_name)} (${truncateText(release_year)})`;
-
       audioPreview(song.track_name, song.artist_name);
 
       console.log("Selected song:", song);
-    });
+    };
+
+    // Select the first song by default
+    if (index === 0) selectSong();
+
+    li.addEventListener("click", selectSong);
 
     songList.appendChild(li);
   });
