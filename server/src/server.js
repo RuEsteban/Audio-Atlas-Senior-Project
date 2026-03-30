@@ -1,10 +1,18 @@
+import 'dotenv/config';
 import { buildApp } from './app.js'
 import cors from '@fastify/cors';
 
 const fastify = buildApp()
 
-fastify.register(cors, { 
-  origin: true
+const allowedOrigins = [
+  process.env.FRONTEND_PROD
+];
+
+fastify.register(cors, {
+  origin: allowedOrigins,
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false
 });
 
 //Run the server
