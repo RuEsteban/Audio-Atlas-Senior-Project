@@ -4,7 +4,7 @@
  * Trigger route for weekly all-country ingestion
  */
 import {  ingestAllLastfmWeeklyCharts, ingestAllSpotifyWeeklyCharts, ingestAllWeeklyCharts} from '../../services/bulkWeeklyIngestService.js'
-import { clearChartCache, clearChartCacheByPrefix } from '../../services/fetchTracks.js'
+import { clearAllCachedCharts, clearCachedProvider } from '../../services/fetchTracks.js'
 
 export default async function bulkWeeklyIngestRoutes(fastify) {
     fastify.post('/ingest/weekly/all', {
@@ -52,9 +52,9 @@ export default async function bulkWeeklyIngestRoutes(fastify) {
             })
 
             if (chartDate) {                    // clear cache for lsstfm on this date
-                clearChartCacheByPrefix('lastfm', chartDate)
+                clearCachedProvider('lastfm', chartDate)
             } else {                            // or clear all cache
-                clearChartCache()
+                clearAllCachedCharts()
             }
         } else if (provider === 'spotify') {
             result = await ingestAllSpotifyWeeklyCharts({
@@ -65,9 +65,9 @@ export default async function bulkWeeklyIngestRoutes(fastify) {
             })
 
             if (result?.effectiveChartDate) {                    // clear cache for spotify on this date
-                clearChartCacheByPrefix('spotify', result.effectiveChartDate)
+                clearCachedProvider('spotify', result.effectiveChartDate)
             } else {                            // or clear all cache
-                clearChartCache()
+                clearAllCachedCharts()
             }
         } else {
             result = await ingestAllWeeklyCharts({
@@ -76,7 +76,7 @@ export default async function bulkWeeklyIngestRoutes(fastify) {
                 limit,
                 concurrency
             })
-            clearChartCache()               // clear all cache since full bulk ingest
+            clearAllCachedCharts()               // clear all cache since full bulk ingest
         }
 
         return reply.send(result)
