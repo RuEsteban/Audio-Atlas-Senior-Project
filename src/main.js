@@ -362,7 +362,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Set displayed selected week
         const [year, month, day] = selectedWeek.split("-").map(Number);
-        selected.textContent = formatDateForDisplay(new Date(year, month - 1, day));
+        const displayDate = new Date(year, month - 1, day);
+        displayDate.setDate(displayDate.getDate() + 1);
+
+        selected.textContent = formatDateForDisplay(displayDate);
 
         selected.addEventListener("click", e => {
             e.stopPropagation();
@@ -606,6 +609,8 @@ function getCurrentWeek() {
     const start = new Date(2026, 1, 26);
     const today = new Date();
 
+    today.setDate(today.getDate() - 1);
+
     const diffInDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
     const weeksPassed = Math.floor(diffInDays / 7);
 
@@ -626,7 +631,11 @@ function generateThursdayOptions(optionsList, numWeeks = 52) {
         d.setDate(start.getDate() + i * 7);
 
         const value = formatDateForValue(d);
-        const display = formatDateForDisplay(d);
+
+        const displayDate = new Date(d);
+        displayDate.setDate(displayDate.getDate() + 1); 
+
+        const display = formatDateForDisplay(displayDate);
 
         const li = document.createElement("li");
         li.setAttribute("data-value", value);
