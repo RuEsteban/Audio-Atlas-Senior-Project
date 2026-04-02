@@ -421,7 +421,7 @@ p {
 
 .extraDetails .custom-dropdown .options {
     position: absolute;
-    transform: translateY(-141%);
+    transform: translateY(-136%);
     left: 0;
     width: 100%;
     background-color: white;
@@ -429,7 +429,7 @@ p {
     border-radius: 10px;
     max-height: 150px;
     overflow-y: auto;
-    display: none;
+    opacity: 0;
     z-index: 2000;
 }
 
