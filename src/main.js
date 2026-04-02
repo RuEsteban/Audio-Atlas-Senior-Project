@@ -54,7 +54,8 @@ const infoPage = document.getElementById("info-page");
 const closeInfoButton = document.getElementById("closeInfoButton");
 const selectOptions = document.getElementById("selectOptions");
 const aggInfo = document.getElementById("aggInfo");
-let aggWeights = document.getElementById("weights");
+const aggWeights = document.getElementById("weights");
+
 let loadingElement;
 let loadingAudio = false;
 
@@ -159,7 +160,6 @@ enterButton.addEventListener("click", () => {
   greeterContainer.classList.add("hidden");
   globeElement.classList.add("enter");
   selectOptions.classList.add("show");
-  infoPage.classList.add("show");
   
   globe.controls().autoRotate = false;
   globe.controls().enableZoom = true;
@@ -238,7 +238,27 @@ closeInfoButton.addEventListener("click", () => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    // exit button for music player
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const target = button.getAttribute("data-tab");
+
+        // remove active from all
+        tabButtons.forEach(btn => btn.classList.remove("active"));
+        tabContents.forEach(tab => tab.classList.remove("active"));
+
+        // activate clicked
+        button.classList.add("active");
+        document.getElementById(target).classList.add("active");
+      });
+    });
+  
+  
+  
+  
+  // exit button for music player
     exitButton.addEventListener("click", () => {
         resetAudio();
         topSongsArray = null;
@@ -841,12 +861,6 @@ function populateSongList(songs) {
         ranksContainer.innerHTML = `
           ${spotify_rank ? `<div class="spotify-rank"><span class="rank-label">Spotify: </span>#${spotify_rank}</div>` : ""}
           ${lastfm_rank ? `<div class="lastfm-rank"><span class="rank-label">Last.fm: </span>#${lastfm_rank}</div>` : ""}
-        `;
-
-        aggWeights.innerHTML = `
-          <p><strong>Database Weights:</strong></p>
-          <p>Spotify: ${0.5 || "N/A"}</p>
-          <p>Last.fm: ${0.5 || "N/A"}</p>
         `;
       }
 
