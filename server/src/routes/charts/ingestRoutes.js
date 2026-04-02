@@ -5,7 +5,7 @@
  */
 
 import { ingestLastfmCountryTopTracks } from '../../services/chartAggregationService.js'
-import { clearChartCacheKey } from '../../services/fetchTracks.js'
+import { clearCachedCountry } from '../../services/fetchTracks.js'
 
 export default async function ingestRoutes(fastify) {
     fastify.post('/ingest/lastfm/country-top-tracks', {
@@ -54,7 +54,7 @@ export default async function ingestRoutes(fastify) {
 
         // invalidate in-memory cache for this chart snapshot
         if (chartDate) {
-            clearChartCacheKey('lastfm', chartDate, country)
+            clearCachedCountry('lastfm', chartDate, country)
         }
 
         return reply.send({ ok: true, ...result })
