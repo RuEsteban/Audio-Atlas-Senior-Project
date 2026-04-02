@@ -875,6 +875,11 @@ function populateSongList(songs) {
 
     songList.appendChild(li);
   });
+
+  const firstItem = songList.querySelector("li");
+    if (firstItem) {
+      firstItem.click(); // triggers selectSong()
+    }
 }
 
 function displayLoading() {
