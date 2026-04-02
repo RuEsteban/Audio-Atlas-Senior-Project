@@ -1265,3 +1265,25 @@ p {
 .tab-content.active {
   display: block;
 }
+
+.song-ranks-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.song-ranks-container .rank-icon {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: contain;
+}
+
+.spotify-rank,
+.lastfm-rank {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1rem;
+  opacity: 0.9;
+}

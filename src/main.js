@@ -814,14 +814,6 @@ function populateSongList(songs) {
     let rank = song.rank || song.aggregate_rank || "-";
     let track_name = song.track_name || "Unknown";
     let artist_name = song.artist_name || "Unknown";
-    let album_name = song.album_name || "Unknown";
-    let release_year = song.release_year || "Unknown";
-
-    let spotify_rank = song.spotify_rank;
-    let lastfm_rank = song.lastfm_rank;
-
-    let spotify_weight = +(song.spotify_points / song.combined_score).toFixed(3);
-    let lastfm_weight = +(song.lastfm_points / song.combined_score).toFixed(3);
 
     li.innerHTML = `
       <div class="song-number">${truncateText(rank)}</div>
@@ -841,45 +833,57 @@ function populateSongList(songs) {
     const link = li.querySelector(".album-link");
     link.addEventListener("click", (e) => e.stopPropagation());
 
-    const selectSong = () => {
-      document.querySelectorAll("#songList li").forEach(item => {
-        item.classList.remove("selected-song");
-        const ranksContainer = item.querySelector(".song-ranks-container");
-        if (ranksContainer) ranksContainer.innerHTML = "";
-      });
-
-      li.classList.add("selected-song");
-
-      document.getElementById("songName").innerHTML =
-        `<a href="${ext_url}" target="_blank">${truncateText(track_name)}</a>`;
-      document.getElementById("artistName").textContent = truncateText(artist_name);
-      document.getElementById("albumName").textContent =
-        `${truncateText(album_name)} (${truncateText(release_year)})`;
-
-      if (selectedDatabase === "aggregate") {
-        const ranksContainer = li.querySelector(".song-ranks-container");
-        ranksContainer.innerHTML = `
-          ${spotify_rank ? `<div class="spotify-rank"><span class="rank-label">Spotify: </span>#${spotify_rank}</div>` : ""}
-          ${lastfm_rank ? `<div class="lastfm-rank"><span class="rank-label">Last.fm: </span>#${lastfm_rank}</div>` : ""}
-        `;
-      }
-
-      currSong = index;
-      playSong(currSong);
-
-      console.log("Selected song:", song);
-    };
-
     // Select the first song by default
-    li.addEventListener("click", selectSong);
+    li.addEventListener("click", () => selectSong(li, song, index));
 
     songList.appendChild(li);
+
+    const firstItem = songList.querySelector("li");
+    if (firstItem && songs.length > 0) {
+      updateSelectedSongUI(firstItem, songs[0], 0); // 👈 no audio
+    }
   });
 
-  const firstItem = songList.querySelector("li");
-    if (firstItem) {
-      firstItem.click(); // triggers selectSong()
-    }
+}
+
+function updateSelectedSongUI(li, song, index) {
+  document.querySelectorAll("#songList li").forEach(item => {
+    item.classList.remove("selected-song");
+    const ranksContainer = item.querySelector(".song-ranks-container");
+    if (ranksContainer) ranksContainer.innerHTML = "";
+  });
+
+  li.classList.add("selected-song");
+
+  document.getElementById("songName").innerHTML =
+    `<a href="${song.external_url || "#"}" target="_blank">${truncateText(song.track_name)}</a>`;
+  document.getElementById("artistName").textContent = truncateText(song.artist_name);
+  document.getElementById("albumName").textContent =
+    `${truncateText(song.album_name)} (${truncateText(song.release_year)})`;
+
+  if (selectedDatabase === "aggregate") {
+    const ranksContainer = li.querySelector(".song-ranks-container");
+    ranksContainer.innerHTML = `
+      ${song.spotify_rank ? `
+        <div class="spotify-rank">
+          <img src="/img/spotify.png" class="rank-icon" />
+          #${song.spotify_rank}
+        </div>` : ""}
+        
+      ${song.lastfm_rank ? `
+        <div class="lastfm-rank">
+          <img src="/img/lastfm.png" class="rank-icon" />
+          #${song.lastfm_rank}
+        </div>` : ""}
+    `;
+  }
+
+  currSong = index;
+}
+
+function selectSong(li, song, index) {
+  updateSelectedSongUI(li, song, index);
+  playSong(index); // only here
 }
 
 function displayLoading() {
