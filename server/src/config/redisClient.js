@@ -1,4 +1,5 @@
 // server/src/config/redisClient.js
+import 'dotenv/config';
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({

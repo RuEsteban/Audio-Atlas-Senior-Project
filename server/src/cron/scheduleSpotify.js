@@ -1,4 +1,4 @@
-import qstash from '../config/qstashClient'
+import qstash from '../config/qstashClient.js'
 
 /**
  * @returns top chart data of every country from spotify.
