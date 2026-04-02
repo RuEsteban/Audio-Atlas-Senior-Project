@@ -1,7 +1,5 @@
-import { Client } from "@upstash/qstash";
+import qstash from '../config/qstashClient'
 import 'dotenv/config';
-dotenv.config();
-
 /**
  * @returns top chart data of every country from lastFM.
  * 
@@ -16,15 +14,10 @@ function getChartDate() {
     return today.toISOString().split("T")[0];
 }
 
-const client = new Client({
-    baseUrl: "https://qstash-us-east-1.upstash.io",
-    token: process.env.QSTASH_TOKEN
-});
-
 async function scheduleLastFm() {
     const chartDate = getChartDate(); 
 
-    const res = await client.schedules.create({
+    const res = await qstash.schedules.create({
         destination: process.env.BACKEND_URL + "/ingest/weekly/all",
         cron: "0 17 * * 5",  // Friday at 12 PM EST (in UTC format)
         method: "POST",
@@ -42,7 +35,7 @@ async function scheduleLastFm() {
         retryInterval: 3600  // retry after one hour
     });
 
-    // console.log("Last.fm weekly cron scheduled.", res);
+    console.log("Last.fm weekly cron scheduled: ", res);
 }
 
 scheduleLastFm();
