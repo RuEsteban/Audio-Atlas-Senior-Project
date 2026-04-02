@@ -56,6 +56,7 @@ const selectOptions = document.getElementById("selectOptions");
 const aggInfo = document.getElementById("aggInfo");
 let aggWeights = document.getElementById("weights");
 let loadingElement;
+let loadingAudio = false;
 
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
@@ -86,12 +87,7 @@ let highlightedCountry = null;
 const disabledCountries = ["AQ", "RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER", "FM", "GW", "IR", "KP", "LA", "LY", "MK", "NR", "PS", "SB", "SY", "SZ", "TO", "TV", "TZ", "VA", "XK"];
 
 function selectCountry(d) {
-  audio.pause();
-  audio.currentTime = 0;
-  currSong = 0;
-
-  document.getElementById("timelineBar").style.width = "0%";
-  playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+  resetAudio();
 
   // reset currsong index
 
@@ -244,9 +240,10 @@ closeInfoButton.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
     // exit button for music player
     exitButton.addEventListener("click", () => {
-        audio.pause();
+        resetAudio();
+        topSongsArray = null;
+        currSong = 0;
         player.classList.remove("show");
-        player.classList.remove("play");
         songContainer.classList.remove("show");
         searchBar.classList.remove("move");
         exitButton.classList.remove("show");
@@ -305,6 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           if (selectedCountryISO) {
+            resetAudio();
             fetchTopSongs(selectedCountryISO);
           }
 
@@ -334,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
         option.addEventListener("click", () => {
           playbackMode = option.getAttribute("data-value");
 
-          selected.textContent = `Playback: ${option.textContent}`;
+          selected.textContent = `${option.textContent}`;
 
           console.log("Playback mode:", playbackMode);
 
@@ -401,8 +399,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.getElementById("backButton");
     const nextButton = document.getElementById("nextButton");
     const volumeBar = document.getElementById("volumeBar");
+    const volumeIcon = document.getElementById("volumeIcon");
     audio.volume = 0.1;
     volumeBar.value = 0.1;
+    let storeVol = audio.volume;
 
     const timelineBar = document.getElementById("timelineBar");
 
@@ -411,18 +411,58 @@ document.addEventListener("DOMContentLoaded", () => {
     const barContainer = document.getElementById("barContainer");
 
     volumeBar.addEventListener("input", () => {
-      audio.volume = volumeBar.value;
-    });
+        audio.volume = volumeBar.value;
+
+        if (audio.volume === 0) {
+          volumeIcon.classList.remove("fa-volume-high", "fa-volume-low");
+          volumeIcon.classList.add("fa-volume-xmark");
+        }
+        else if (audio.volume < 0.5) {
+          volumeIcon.classList.remove("fa-volume-high", "fa-volume-xmark");
+          volumeIcon.classList.add("fa-volume-low");
+          storeVol = audio.volume;
+        }
+        else {
+          volumeIcon.classList.remove("fa-volume-low", "fa-volume-xmark");
+          volumeIcon.classList.add("fa-volume-high");
+          storeVol = audio.volume;
+        }
+      });
+
+      volumeIcon.addEventListener("click", () => {
+        if (audio.volume > 0) {
+          storeVol = audio.volume;
+          audio.volume = 0;
+          volumeBar.value = 0;
+          volumeIcon.classList.remove("fa-volume-high", "fa-volume-low");
+          volumeIcon.classList.add("fa-volume-xmark");
+        }
+        else {
+          audio.volume = storeVol || 0.1;
+          volumeBar.value = audio.volume;
+          if (audio.volume < 0.5) {
+            volumeIcon.classList.remove("fa-volume-xmark", "fa-volume-high");
+            volumeIcon.classList.add("fa-volume-low");
+          }
+          else {
+            volumeIcon.classList.remove("fa-volume-xmark", "fa-volume-low");
+            volumeIcon.classList.add("fa-volume-high");
+          }
+        }
+      });
 
   // play or pause button
   playButton.addEventListener("click", () => {
+    if (loadingAudio) {
+      return;
+    }
     if (!topSongsArray || topSongsArray.length === 0) {
       return;
     }
 
     const song = topSongsArray[currSong];
     if (audio.paused) {
-      if (!audio.srcc || audio.src === "") {
+      if (audio.readyState === 0) {
         audioPreview(song.track_name, song.artist_name);
       }
       else {
@@ -460,22 +500,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("ended", () => {
+      if (!topSongsArray) {
+        return;
+      }
+
       if (playbackMode === "loop") {
         playSong(currSong);
         return;
       }
-
       if (playbackMode === "autoplay") {
         nextSong();
         return;
       }
-
-      // off mode
-      audio.currentTime = 0;
-      playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
-      timelineBar.style.width = "0%";
-      currentTime.textContent = "0:00";
-      player.classList.remove("play");
+      else {
+        resetAudio();
+      }
     });
 
     barContainer.addEventListener("click", (e) => {
@@ -489,6 +528,11 @@ document.addEventListener("DOMContentLoaded", () => {
 const usedAudios = new Map();
 
 async function audioPreview(title, artist) {
+  if (loadingAudio) {
+    return;
+  }
+
+  loadingAudio = true;
   try {
       // http get request sent, retrieves song data
       const search = encodeURIComponent(`${title} ${artist}`);
@@ -497,8 +541,9 @@ async function audioPreview(title, artist) {
       if (usedAudios.has(search)) {
         audio.src = usedAudios.get(search);
         audio.currentTime = 0;
-        audio.play();
+        await audio.play();
         player.classList.add("play");
+        loadingAudio = false;
         return;
       }
 
@@ -541,6 +586,8 @@ async function audioPreview(title, artist) {
 
       } catch (error) {
           console.error("Fetch error:", error);
+      } finally {
+        loadingAudio = false;
       }
 }
 
@@ -705,6 +752,20 @@ function prevSong() {
   playSong(currSong);
 }
 
+function resetAudio() {
+  audio.pause();
+  //audio.removeAttribute("src");
+  //audio.load();
+  audio.currentTime = 0;
+  audio.src = "";
+
+  player.classList.remove("play");
+  playButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+
+  document.getElementById("timelineBar").style.width = "0%";
+  document.getElementById("currentTime").textContent = "0:00";
+}
+
 function populateSongList(songs) {
   const songList = document.querySelector("#songList ul");
   songList.innerHTML = ""; // clear existing songs
@@ -781,14 +842,12 @@ function populateSongList(songs) {
       }
 
       currSong = index;
-      audioPreview(song.track_name, song.artist_name);
+      playSong(currSong);
 
       console.log("Selected song:", song);
     };
 
     // Select the first song by default
-    if (index === 0) selectSong();
-
     li.addEventListener("click", selectSong);
 
     songList.appendChild(li);

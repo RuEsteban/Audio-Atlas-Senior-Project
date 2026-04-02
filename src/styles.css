@@ -197,7 +197,7 @@ p {
 .centerColumn {
     flex: 1;
     left: 50%;
-    transform: translateX(-33%);
+    transform: translateX(-22%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -230,9 +230,10 @@ p {
     transform: scale(1.2);
 }
 
-#playButton {
+#playButton i {
+    display: inline-block;
     font-size: 2rem;
-    display: flex;
+    width: 1em;
 }
 
 #backButton, #nextButton {
@@ -272,17 +273,6 @@ p {
     border-radius: 3px;
 }
 
-.extraDetails {
-    display: flex;
-    align-items: center;
-    color: white;
-    font-size: 1.2rem;
-    font-family: 'DM Sans';
-    position: relative;
-    top: 16px;
-    right: 100px;
-}
-
 .vol-container {
     display: flex;
     align-items: center;
@@ -297,13 +287,6 @@ p {
     display: flex;
     align-items: center;
     margin-left: auto;
-}
-
-.extraDetails p {
-    color: white;
-    margin: 2px 0;
-    opacity: 80%;
-    font-size: 1rem;
 }
 
 #selectOptions {
@@ -400,20 +383,40 @@ p {
     flex: 3;
 }
 
-.extraDetails .custom-dropdown {
+.extraDetails {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 1rem;
+    font-family: 'DM Sans';
     position: relative;
-    width: 120px;
+    right: 70px;
+    justify-content: flex-end;
+    width:100%
+}
+
+.extraDetails p {
+    color: white;
+    margin: 2px 0;
+    opacity: 80%;
+    font-size: 1rem;
+}
+
+.extraDetails .custom-dropdown {
+    top: 18px;
+    position: relative;
+    width: 130px;
 }
 
 .extraDetails .custom-dropdown .selected {
-    padding: 5px 10px;
     cursor: pointer;
     text-align: center;
     border-radius: 10px;
     color: white;
     border: 1px solid #ccc;
-    text-align: center;
-    display: block;
+    text-align: left;
+    font-size: 1rem;
+    display: flex;
 }
 
 .extraDetails .custom-dropdown .options {
@@ -430,6 +433,11 @@ p {
     z-index: 2000;
 }
 
+.extraDetails .pb {
+    display: flex;
+    padding: 11px 10px 0px 0px;
+}
+
 .extraDetails .custom-dropdown .options.show {
     display: block;
     opacity: 1;
@@ -441,7 +449,7 @@ p {
 
 .extraDetails .custom-dropdown .selected::after {
     content: " ↑";
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #555;
     transition: transform 0.2s ease;
 }
@@ -461,6 +469,13 @@ p {
 .volume i {
     font-size: 1rem;
     color: white;
+
+}
+
+#volumeIcon {
+    display: inline-block;
+    width: 1.2em;
+    text-align: center;
 }
 
 #volumeBar {

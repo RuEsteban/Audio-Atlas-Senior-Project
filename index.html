@@ -56,13 +56,13 @@
 		<div class="centerColumn">
 			<div class="controls">
 				<button id="backButton">
-					<i class="fa-solid fa-backward-step"></i>
+					<i id="back" class="fa-solid fa-backward-step"></i>
 				</button>
 				<button id="playButton">
-					<i class="fa-solid fa-play"></i>
+					<i id="play" class="fa-solid fa-play"></i>
 				</button>
 				<button id="nextButton">
-					<i class="fa-solid fa-forward-step"></i>
+					<i id="next" class="fa-solid fa-forward-step"></i>
 				</button>
 			</div>
 			<div class="timeline">
@@ -76,8 +76,9 @@
 
 		<div class="rightControls">
 			<div class="extraDetails">
+				<div class="pb">Playback:</div>
 				<div class="custom-dropdown" id="playbackDropdown">
-					<div class="selected">Playback: Off</div>
+					<div class="selected">Off</div>
 					<ul class="options">
 						<li data-value="off">Off</li>
 						<li data-value="autoplay">Autoplay</li>
@@ -87,7 +88,7 @@
 			</div>
 			<div class="vol-container">
 				<div class="volume">
-					<i class="fa-solid fa-volume-high"></i>
+					<i id="volumeIcon" class="fa-solid fa-volume-low"></i>
 					<input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1">
 				</div>
 			</div>
