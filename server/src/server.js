@@ -1,9 +1,12 @@
 import 'dotenv/config';
 import { buildApp } from './app.js'
+import cors from '@fastify/cors';
 
 const fastify = buildApp()
 
-
+fastify.register(cors, { 
+  origin: true
+});
 
 //Run the server
 const start = async () => {
