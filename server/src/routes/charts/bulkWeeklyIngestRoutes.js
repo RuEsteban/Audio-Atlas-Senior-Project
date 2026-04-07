@@ -6,6 +6,16 @@
 import {  ingestAllLastfmWeeklyCharts, ingestAllSpotifyWeeklyCharts, ingestAllWeeklyCharts} from '../../services/bulkWeeklyIngestService.js'
 import { clearAllCachedCharts, clearCachedProvider } from '../../services/fetchTracks.js'
 
+// calculates thursday
+function getThursdayDate() {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // returns integer, 0 for sunday ... 6 for saturday
+    // Calculate how many days to subtract to get Thursday (4)
+    const diff = dayOfWeek >= 4 ? dayOfWeek - 4 : 7 - (4 - dayOfWeek);
+    today.setDate(today.getDate() - diff);
+    return today.toISOString().split("T")[0]; // YYYY-MM-DD
+  }
+
 export default async function bulkWeeklyIngestRoutes(fastify) {
     fastify.post('/ingest/weekly/all', {
         schema: {
@@ -37,7 +47,10 @@ export default async function bulkWeeklyIngestRoutes(fastify) {
         const body = req.body ?? {}
 
         const provider = body.provider ?? 'all'
-        const chartDate = body.chartDate ?? null
+        // cron job for last fm doesn't pass a date. Calculate date here
+        const chartDate = 
+            body.chartDate ?? 
+            (provider === 'lastfm' ? getThursdayDate() : null)
         const limit = body.limit ?? 10
         const concurrency = body.concurrency ?? 4
 
