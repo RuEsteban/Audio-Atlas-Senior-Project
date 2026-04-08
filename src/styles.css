@@ -292,19 +292,24 @@ p {
 
 #selectOptions {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 55%;
+    right: 75%;
+    transform: translateX(50%);
     width: 200px;
     z-index: 1000;
     padding: 1vh 1.6vh;
     font-size: 1.6vh;
     border: none;
-    opacity: 0;
+    opacity: 1;
     transition: all 1s ease;
     border-radius: 25%;
 }
 
 #selectOptions.show {
+    transform: translate(0,0);
+    left: auto;
+    top: 10px;
+    right: 10px;
     opacity: 1;
 }
 
@@ -544,7 +549,7 @@ p {
     align-items: center;
     gap: 10px;
     box-sizing: border-box;
-    transition: transform 1.5s ease;
+    transition: all 1.5s ease;
 }
 
     #greeter h1 {

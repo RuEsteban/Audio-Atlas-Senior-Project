@@ -10,6 +10,7 @@ import * as THREE from 'three'
 
 // Initialize Vercel Analytics
 //inject();
+let firstTime = true;
 
 const globeContainer = document.getElementById('globe');
 
@@ -147,86 +148,86 @@ window.addEventListener('resize', () => {
   globe.height(window.innerHeight);
 });
 
-// enter button
-const enterButton = document.getElementById("enter");
+// enter site
 const greeterContainer = document.getElementById("greeter");
 const globeElement = document.getElementById("globe");
 const title = document.getElementById("title");
 
-enterButton.addEventListener("click", () => {
+
+function enterSite() {
   console.log("enter");
 
   searchBar.classList.add("show");
   greeterContainer.classList.add("hidden");
   globeElement.classList.add("enter");
   selectOptions.classList.add("show");
-  
+
   globe.controls().autoRotate = false;
   globe.controls().enableZoom = true;
   globe.controls().enablePan = true;
   globe.controls().enableRotate = true;
 
   setTimeout(() => {
-    title.offsetWidth; 
+    title.offsetWidth;
     title.classList.add("show");
   }, 500);
 
   fetch('/custom.geo.json')
-  .then(res => res.json())
-  .then(data => {
-    // centering upon zoom according to country data
-    const countries = data.features.map(feature => {
-      const centroid = turf.centroid(feature);
-      feature.properties.centroid = centroid.geometry.coordinates;
-      return feature;
-    });
+    .then(res => res.json())
+    .then(data => {
+      // centering upon zoom according to country data
+      const countries = data.features.map(feature => {
+        const centroid = turf.centroid(feature);
+        feature.properties.centroid = centroid.geometry.coordinates;
+        return feature;
+      });
 
-    countryFeatures = countries;
+      countryFeatures = countries;
 
-    const countryNames = countries.map(c => c.properties.name);
+      const countryNames = countries.map(c => c.properties.name);
 
-    fuse = new Fuse(countryNames, {
-      threshold: 0.3
-    });
+      fuse = new Fuse(countryNames, {
+        threshold: 0.3
+      });
 
-    globe
-      .polygonsData(countries)
-      .polygonSideColor(() => 'rgba(0,0,0,0)')
-      .polygonStrokeColor(() => '#00eeff')
-      .polygonCapColor(d => {
-        if (disabledCountries.includes(d.properties.iso_a2)) {
-          return 'rgba(128,128,128,0.6)';
-        }
-        if (d.properties.iso_a2 === highlightedCountry) {
-          return 'rgba(255,204,128,0.7)';
-        }
-        return 'rgba(0,0,0,0)';
-      })
-      .onPolygonHover(p => {
-        hover = p;
-        globe.polygonCapColor(d => {
-          if (disabledCountries.includes(d.properties.iso_a2)){
+      globe
+        .polygonsData(countries)
+        .polygonSideColor(() => 'rgba(0,0,0,0)')
+        .polygonStrokeColor(() => '#00eeff')
+        .polygonCapColor(d => {
+          if (disabledCountries.includes(d.properties.iso_a2)) {
             return 'rgba(128,128,128,0.6)';
           }
           if (d.properties.iso_a2 === highlightedCountry) {
-            return 'rgba(0,255,255,0.4)';
+            return 'rgba(255,204,128,0.7)';
           }
-          return d === hover ? 'rgba(0,255,255,0.4)' : 'rgba(0,0,0,0)';
-      });
-    })
-    .onPolygonClick(d => {
-      if (disabledCountries.includes(d.properties.iso_a2)) {
-        const name = d.properties.name;
-        showMsg(`No data available for ${d.properties.name}`);
+          return 'rgba(0,0,0,0)';
+        })
+        .onPolygonHover(p => {
+          hover = p;
+          globe.polygonCapColor(d => {
+            if (disabledCountries.includes(d.properties.iso_a2)) {
+              return 'rgba(128,128,128,0.6)';
+            }
+            if (d.properties.iso_a2 === highlightedCountry) {
+              return 'rgba(0,255,255,0.4)';
+            }
+            return d === hover ? 'rgba(0,255,255,0.4)' : 'rgba(0,0,0,0)';
+          });
+        })
+        .onPolygonClick(d => {
+          if (disabledCountries.includes(d.properties.iso_a2)) {
+            const name = d.properties.name;
+            showMsg(`No data available for ${d.properties.name}`);
 
-        return;
-      }
+            return;
+          }
 
-      console.log("countryName: " + d.properties.name);
-      selectCountry(d);
+          console.log("countryName: " + d.properties.name);
+          selectCountry(d);
+        });
     });
-  });
-});
+}
 
 infoPageButton.addEventListener("click", () => {
   infoPage.classList.add("show");
@@ -305,6 +306,11 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log("Selected database:", selectedDatabase);
 
           dbDropdown.classList.remove("spotify", "lastfm", "agg");
+
+          if(firstTime){
+            enterSite();
+            firstTime = false;
+          }
 
           if (selectedDatabase === "spotify") {
             dbDropdown.classList.add("spotify");
