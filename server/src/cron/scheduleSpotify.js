@@ -11,19 +11,17 @@ import qstash from '../config/qstashClient.js'
 async function scheduleSpotify() {
     const res = await qstash.schedules.create({
         destination: process.env.BACKEND_URL + "/ingest/weekly/all",
-        cron: "0 18 * * 4",  // Thursday at 12:30 PM EST (in UTC format) offset by 30 minutes from lastfm
+        cron: "CRON_TZ=America/New_York 30 11 * * 5",  // Friday at 11:30 AM EST (offset by 30 minutes from lastfm cron)
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.CRON_SECRET}`
+            "Content-Type": "application/json"
         },
-        body: {
+        body: JSON.stringify({
             provider: "spotify",
             limit: 10,
             concurrency: 2
-        },
-        retries: 3,          // retry up to three times
-        retryInterval: 3600  // retry after one hour
+        }),
+        retries: 6          // retries 6 times. Interval between retry increases with each retry call
     });
 
     console.log('Spotify weekly cron scheduled: ', res);

@@ -7,31 +7,22 @@ import qstash from '../config/qstashClient.js'
  * 
  */
 
-function getChartDate() {
-    const today = new Date();
-    today.setDate(today.getDate() - 1); // Friday-1 = Thursday
-    return today.toISOString().split("T")[0];
-}
+
 
 async function scheduleLastFm() {
-    const chartDate = getChartDate(); 
-
     const res = await qstash.schedules.create({
         destination: process.env.BACKEND_URL + "/ingest/weekly/all",
-        cron: "0 17 * * 5",  // Friday at 12 PM EST (in UTC format)
+        cron: "CRON_TZ=America/New_York 0 11 * * 5",  // Friday at 11:00 AM PM EST 
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.CRON_SECRET}`
+            "Content-Type": "application/json"
         },
-        body: {
+        body: JSON.stringify({
             provider: "lastfm",
-            chartDate,
             limit: 10,
             concurrency: 2
-        },
-        retries: 3,          // retry up to three times
-        retryInterval: 3600  // retry after one hour
+        }),
+        retries: 6         // greater the retry count, the longer it takes between each retry
     });
 
     console.log("Last.fm weekly cron scheduled: ", res);
