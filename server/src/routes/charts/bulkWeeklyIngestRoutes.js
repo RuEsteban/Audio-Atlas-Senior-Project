@@ -9,12 +9,18 @@ import { clearAllCachedCharts, clearCachedProvider } from '../../services/fetchT
 // calculates thursday
 function getThursdayDate() {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // returns integer, 0 for sunday ... 6 for saturday
-    // Calculate how many days to subtract to get Thursday (4)
-    const diff = dayOfWeek >= 4 ? dayOfWeek - 4 : 7 - (4 - dayOfWeek);
-    today.setDate(today.getDate() - diff);
-    return today.toISOString().split("T")[0]; // YYYY-MM-DD
-  }
+  
+    // Change into eastern time
+    const estDate = new Date(
+      today.toLocaleString('en-US', { timeZone: 'America/New_York' })
+    );
+  
+    const dayOfWeek = estDate.getDay();
+    const diff = dayOfWeek >= 4 ? dayOfWeek - 4 : 7 - (4 - dayOfWeek); // calculate difference
+  
+    estDate.setDate(estDate.getDate() - diff);
+    return estDate.toLocaleDateString('en-CA');
+}
 
 export default async function bulkWeeklyIngestRoutes(fastify) {
     fastify.post('/ingest/weekly/all', {
