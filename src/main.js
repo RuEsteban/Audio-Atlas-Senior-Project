@@ -21,6 +21,7 @@ let currSong = 0;
 let playbackMode = "off";
 const audio = document.getElementById("audioPlayer");
 const playButton = document.getElementById("playButton");
+const MAX_AUDIOS = 100;
 
 //string to build fetch url
 // example: https://audio-atlas-senior-project.onrender.com/api/lastfm/2026-03-01/US/top-tracks
@@ -37,7 +38,6 @@ console.log("Current week:", selectedWeek);
 let selectedCountryISO = null;
 
 const exitButton = document.getElementById("exitButton");
-
 
 // search bar
 let countryFeatures = [];
@@ -63,7 +63,6 @@ let loadingAudio = false;
 // Globe creation
 // earth-blue-marble (OR earth-dark, earth-day, earth-night etc)
 const globe = Globe()(globeContainer)
-  //.globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
   .globeImageUrl('/img/8k_earth_daymap.jpg')
   .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
   .backgroundColor('#000')
@@ -90,8 +89,6 @@ const disabledCountries = ["AQ", "RU", "BN", "CD", "CF", "CG", "CI", "CV", "ER",
 
 function selectCountry(d) {
   resetAudio();
-
-  // reset currsong index
 
   if (!selectedDatabase) {
     showMsg("Please select a database first");
@@ -152,7 +149,6 @@ window.addEventListener('resize', () => {
 const greeterContainer = document.getElementById("greeter");
 const globeElement = document.getElementById("globe");
 const title = document.getElementById("title");
-
 
 function enterSite() {
   console.log("enter");
@@ -237,7 +233,6 @@ closeInfoButton.addEventListener("click", () => {
   infoPage.classList.remove("show");
 });
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const tabButtons = document.querySelectorAll(".tab-button");
     const tabContents = document.querySelectorAll(".tab-content");
@@ -256,10 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   
-  
-  
-  
-  // exit button for music player
+    // exit button for music player
     exitButton.addEventListener("click", () => {
         resetAudio();
         topSongsArray = null;
@@ -606,6 +598,11 @@ async function audioPreview(title, artist) {
 
       // extract URL
       usedAudios.set(search, previewUrl);
+
+      if (usedAudios.size > MAX_AUDIOS) {
+        const aud = usedAudios.keys().next().value;
+        usedAudios.delete(aud);
+      }
       audio.src = previewUrl;
       audio.currentTime = 0;
       audio.play();
